@@ -87,10 +87,8 @@
 .zone-label .zl-body { fill: var(--surface); stroke: var(--ink); stroke-opacity: .35; }
 .zone-label .zl-badge { fill: var(--ink); }
 .zone-label .zl-body { filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .12)); }
-.zone-label .zl-count { fill: var(--on-ink); font-weight: 800; text-anchor: middle; }
 .zone-label .zl-name { fill: var(--text); font-weight: 800; }
 .cell-name { fill: var(--text); font-weight: 800; paint-order: stroke; stroke: var(--surface); stroke-width: 3.5px; stroke-linejoin: round; }
-.cell-count { fill: var(--muted); font-weight: 600; }
 .sign-board { fill: #f9f1de; stroke: #8a6a45; stroke-width: 1.5; }
 .sign-post { fill: #8a6a45; }
 .sign-shadow { fill: #1d3a2a; opacity: .2; }
