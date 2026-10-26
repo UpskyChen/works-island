@@ -1,119 +1,89 @@
-# 作品島 v3（2.5D 與不規則島嶼）施工計畫
+# 作品島 v4（連線規格化＋驗證狀態）施工計畫
 
-> 唯讀掃描後撰寫，Sky 已於 2026-10-26 回覆「yes」核准。本檔取代 v2 的 `PLAN.md`（v2 計畫可在 git 歷史中查到）。
-> 依據：Sky 2026-10-26 的【改版指令：2.5D 與不規則島嶼】第一到五項；資料鐵律以原任務書與 `works-data.json` 為準，衝突時鐵律優先。
+> 依據：Sky 2026-10-26 上傳的《作品島升級任務書（增補版 v2）》。
+> 狀態：Sky 已於 2026-10-26 回覆「yes」核准；等 Sky 補上 `works-data-v2.json` 後施工。本檔取代 v3 的 `PLAN.md`（v3 計畫可在 git 歷史中查到）。
+
+## 0. 卡住的地方（先處理）
+
+**`works-data-v2.json` 不在任何地方。** 這次只上傳了任務書本身；repo（`main` 與所有分支）、專案檔案夾都沒有這個檔。
+
+任務書要的新欄位全部只能來自這個檔，我不會自己寫：`connections[].id / type / typeLabel / status / statusLabel`、`connectionTypes`（5 種）、`statusLegend`（3 種符號、名稱、meaning）、每件作品的 `statusKey`、`verification`（level、levelLabel、date、note）。
+
+還有一個具體證據說明不能用推的：用網站現在的判斷規則（`statusRules` 關鍵字）算，15 件的分布是 **✓ 9／◐ 4／❄ 2**；任務書驗收要的是 **✓ 8／◐ 5／❄ 2**。也就是說 v2 會把現在某一件「已上線」改判成 ◐，是哪一件只有 v2 檔案知道。
 
 ## 1. 現況掃描結果
 
 | 項目 | 現況 |
 |---|---|
-| 分支 | `main` 最新是 `32305c7`（#2 修分區預覽卡閃爍），v2 已合併上線 |
-| 地圖 | `site/js/map.js`（約 22KB）用**規則六角格**鋪滿矩形島，壓扁 0.82 做輕等角；地塊下緣有一層深色側面 |
-| 版面 | `site/data/layout.json` 只存「每列哪幾座島、多寬」，島形與節點位置由程式即時算 |
-| 資料檔 | `site/data/works.json` 與根目錄 `works-data.json` 內容完全相同（格式不同）：15 件、5 區、7 條連線、excluded 4 項、`intro.text` 自我介紹 |
-| 寫死的文字 | 畫面程式裡約 **60 處**中文字串：按鈕與面板文字（`index.html`、`panel.js`、`detail.js`、`main.js`）、小貓 8 句提示（`guide.js`）、狀態名稱與判斷關鍵字（`util.js`）、18 條顯示規則（`display-rules.js`）。網址：程式裡**沒有**寫死任何作品網址，全部來自資料檔 |
-| 部署 | `.github/workflows/pages.yml`：`main` 的 `site/**` 有變動就直接部署，**沒有任何檢查**，資料檔改壞會讓網站空白 |
-| 缺件 | repo 裡沒有原任務書全文，「原任務書 8 項」的原文我看不到（見第 7 節） |
+| 基底分支 | PR #4（拿掉分區名稱前的數字）**已合併**，`main` 最新是 `a335194`。新分支直接從這裡開，不會疊到未合併的東西上 |
+| 網站實際讀的資料檔 | `site/data/works.json`。它除了作品資料，還有 `ui`（全部畫面文字）、`statusRules`、`displayRules`（18 條顯示時刪字的規則） |
+| 根目錄 `works-data.json` | v1 原始資料存檔，網站**沒有讀它**。任務書說「v2 取代 works-data.json」，但實際要接上網站，要改的是 `site/data/works.json` |
+| 連結數 | 23 個，和任務書一致 |
+| 連線 | 7 條，現有欄位只有 from／to／label／style（solid／dashed）。地圖、右側面板「連線」分頁、詳情卡「關聯」三處都在用 |
+| 狀態符號 | 目前由程式從 status 文字比對關鍵字判斷（`util.js` 的 `statusKind`），符號是 SVG 畫的 ✓／半滿圓／雪花 |
+| 圖例 | 島嶼模式左下 `#legend`，由 `main.js` 的 `renderLegend` 畫：總件數、分區、實線／虛線／步道 |
+| 清單模式 | `panel.js` 的 `renderListView`；每列有「在島上定位」按鈕，會切回島嶼模式並開該作品詳情 |
+| 部署檢查 | `tools/validate-data.py` 在部署前檢查資料檔（必要欄位、件數對帳、excluded 不得出現、程式用到的 ui 文字都要存在）；沒過就不部署 |
 
-## 2. 會改哪些檔
+## 2. 會改哪些檔（拿到 v2、Sky 回 yes 之後）
 
 ```
-site/data/works.json      修改：新增 ui（介面文字）、guide（小貓提示）、displayRules（顯示規則）、statusRules（狀態判斷）四段。
-                          既有的 meta / intro / zones / works / connections / excluded 內容一字不改。
-site/data/layout.json     改寫：拿掉六角排列，改存三種寬度（wide/medium/narrow）各自的
-                          島嶼輪廓座標、沙洲／礁石／小浮島、步道曲線與高度、雲層位置。全是版面，不含作品內容。
-site/js/map.js            改寫：2.5D 地形繪製（頂面、側面厚度、岸線泡沫、水面陰影）、依 y 排序遮擋、鏡頭推近＋傾角
-site/js/layout.js         改寫：在不規則輪廓內擺節點；標籤防重疊；手機只顯示編號
-site/js/parallax.js       新增：滑鼠／拖曳／iPad 傾斜的分層視差（水、陰影、島、雲各自位移）
-site/js/text.js           新增：從 works.json 的 ui 段取文字的小工具（缺字時顯示 key，並在 console 提示）
-site/js/main.js、panel.js、detail.js、guide.js、util.js、data-loader.js
-                          修改：所有畫面文字改從資料檔讀；顯示規則改讀 works.json 的 displayRules
-site/index.html           修改：拿掉寫死的文字，只留結構（例外見第 4 節）
-site/css/island.css、base.css  修改：2.5D 地形、視差圖層、新步道、連線與圖例樣式
-tools/gen-islands.mjs     新增：用固定種子產生島嶼輪廓與裝飾，輸出寫進 layout.json（只在調整版面時由我執行，網站不會呼叫）
-tools/validate-data.py    新增：資料檔檢查（只用 Python 內建模組，不裝任何套件）
-.github/workflows/pages.yml  修改：部署前先跑檢查，失敗就不部署；PR 也會跑檢查
-README.md                 修改：新增三段逐步教學，更新檔案結構說明
-PLAN.md                   改寫：本計畫
+works-data.json            以 v2 原檔整份取代（存檔用，內容不動一字）
+site/data/works.json       把 v2 的資料段（meta／intro／zones／works／connections／excluded
+                           ＋新增的 connectionTypes、statusLegend）換進來；
+                           保留原有 ui／displayRules；ui 只「新增」第 3 節列的幾個介面字，舊字不改
+site/js/data-loader.js     讀入 connectionTypes、statusLegend，交給畫面使用
+site/js/util.js            符號改由作品的 statusKey 對照 statusLegend 產生，不再靠關鍵字猜
+site/js/main.js            renderLegend：在實線／虛線／步道下方加狀態圖例（符號＋名稱＋meaning）
+site/js/panel.js           清單模式：頂部加同一份狀態圖例；作品清單之後加「作品關係」專區（7 條）
+site/js/detail.js          狀態標籤下方加「驗證：{levelLabel}（{date}）— {note}」；
+                           關聯列的類型文字改讀 typeLabel
+site/js/connections.js     線條實線／虛線與提示文字改由連線資料欄位決定（不在程式另寫對照表）
+site/css/panel.css         作品關係專區、狀態圖例、驗證列的樣式；not-linked 用灰字＋虛線邊框；390px 不溢出
+site/css/island.css        島嶼圖例多一區的排版
+tools/validate-data.py     新增檢查：statusKey 必須在 statusLegend 裡、connection 的 type 必須在
+                           connectionTypes 裡、status 只能是 linked／not-linked、每件都要有 verification
+README.md                  補一段「新欄位在哪裡改」
+PLAN.md                    換成本計畫（v3 計畫留在 git 歷史）
 ```
 
-刪除：`site/js/display-rules.js`（18 條規則原文搬進 `works.json` 的 `displayRules`，一字不改）。
+**作品關係專區的位置**：放在作品清單**之後**，只放這一處。狀態圖例放在清單**頂部**，兩模式共用同一個渲染函式。
 
-## 3. 不動哪些
+## 3. 需要新增的介面文字（放進 `ui`，請 Sky 一起看過）
 
-- 根目錄 `works-data.json`：保留為原始任務資料存檔，一字不改。README 會寫清楚「網站只讀 `site/data/works.json`，要改內容只改這一個檔」。
-- `works.json` 既有欄位的值（作品文字、連結、excluded、空子區 note）一字不改，只新增四段。
-- `site/js/router.js`、`progress.js`、`connections.js` 的邏輯（深層連結、探索進度、連線資料）。
-- `site/assets/props.svg` 既有插畫（景物照用，只調整擺放）。
-- 網站依舊純靜態：SVG＋CSS＋原生 ES modules，不用 WebGL／Three.js，不加外部 CDN、追蹤、登入。
+這些是畫面上的標題與標籤，不是作品內容；內容（類型名、狀態名、meaning、驗證說明）一律照 v2 原文。
 
-## 4. 設計要點
-
-**一、2.5D 視覺**
-- 斜視角：每座島畫「頂面＋側面帶（厚度）＋岸線泡沫＋水面投影」，側面依光源分兩種明暗。
-- 建築、樹、節點、告示牌依底部 y 值排序繪製，前面的會擋住後面的。
-- 視差分四層：水面紋理、投影、島群、雲。
-  - 桌機：滑鼠移動。
-  - iPad：拖曳時跟著位移；工具列多一顆「傾斜視差」鈕，按下才向 iOS 要求動作感測權限（iOS 規定必須由使用者按鈕觸發），不按就只用拖曳。
-  - 位移只用 `transform`，每格最多更新一次（requestAnimationFrame），鏡頭移動期間暫停視差。
-- 聚焦某區或作品：鏡頭平滑推近，同時把地形的垂直壓縮從全景的 0.78 微調到約 0.9（像鏡頭稍微抬頭）。文字層不跟著壓縮，字不會變形。
-- `prefers-reduced-motion`：視差、開場動畫、水波、雲、連線流動全部關閉，鏡頭直接切換，功能不變。
-
-**二、不規則島嶼**
-- 不再用六角格。每區一個有機輪廓：在圓上取點，用固定種子加入凹凸，再刻出 1～2 個海灣與岬角，最後平滑成曲線。
-- 面積依作品件數決定（教材區 7 件最大，其餘 2 件的島大小也各自略有不同），有最小面積保底，空子區的告示牌也算進空間。
-- 輪廓座標由 `tools/gen-islands.mjs` 以固定種子產生並**寫進 `layout.json`**，網站載入時直接讀座標，每次形狀都一樣。
-- 新增作品時不必重跑產生器：若某島放不下，程式會把該島的輪廓等比例放大到放得下（結果固定，不隨機）。
-- 裝飾：沙洲、礁石、小浮島（同樣寫在 `layout.json`）。
-- 步道：島與島之間的拱橋或棧道，高低與彎度各不相同，有橋墩與影子，**中性木色／灰色、無箭頭**。
-- 作品連線（資料檔 7 條）：**彩色**線，實線＝作品關聯、虛線＝尚未串接入口，畫在步道上層，圖例分開標示「步道（裝飾）」與「作品連線」。
-- 標籤不重疊：擺完節點後逐一檢查文字框，碰撞就沿著島內換位置或改放另一側；手機寬度（narrow）只顯示編號。
-
-**三、內容自己改**
-- 唯一資料檔：`site/data/works.json`。自我介紹（`intro.text`）、作品連結（`works[].links`）、所有按鈕與提示文字都只存在這裡。
-- 例外（必須留在 `index.html`）：`<noscript>` 與「資料載入失敗」兩句。理由：資料檔讀不到時，畫面無法從資料檔取得這兩句話。README 會註明。
-- README 新增三段逐步教學，寫到「在 GitHub 網頁打開檔案 → 按鉛筆圖示 → 改哪一行 → 按 Commit changes → 到 Actions 看綠勾」：
-  1. 我要改自我介紹
-  2. 我要改某個連結
-  3. 我要新增一件作品（附可複製的範本，並提醒同時把 `meta.totalWorks` 和該區 `count` 加一）
-- GitHub Actions 檢查（`tools/validate-data.py`）：
-  - JSON 語法錯誤 → 失敗，並用 GitHub 標註指出「第幾行第幾欄」，在 Actions 頁面和檔案上都看得到。
-  - 必要欄位缺漏（例如作品沒有 `id`、`name`、`zone`、`status`、`links`，連結沒有 `label` 或 `url`）→ 失敗，指出是哪件作品、在第幾行。
-  - 另外檢查：`id` 不重複、`zone` 存在、連線兩端的作品存在、`meta.totalWorks` 與作品數一致、各區 `count` 一致、excluded 的名稱沒有出現在作品裡、`ui` 必要文字都在。
-  - 檢查失敗就**不部署**，線上維持上一版，不會變空白。
-  - `layout.json` 也一併檢查語法。
-
-## 5. 風險
-
-| 風險 | 對策 |
+| key | 文字 |
 |---|---|
-| 2.5D＋視差讓 iPad 變卡 | 只動 transform／opacity；視差圖層用 `will-change`；鏡頭移動時暫停視差與環境動畫；iPad 上預設不開傾斜視差 |
-| 不規則島擺不下節點或標籤互撞 | 產生器先依件數留夠面積；程式碰撞檢查＋自動放大輪廓；驗收腳本逐一比對所有標籤框 |
-| 文字搬進資料檔後，Sky 誤刪某段 `ui` 文字 | 程式缺字時顯示 key 不會壞版；Actions 檢查會擋下缺少必要文字的版本 |
-| `works.json` 與根目錄 `works-data.json` 從此不同 | 這是刻意的：前者是網站用的單一資料檔，後者是原始存檔。README 寫明，鐵律檢查跑在 `works.json` 上 |
-| 改版範圍大，可能一輪做不完 | 先做二（島形）＋三（資料與檢查），再做一（2.5D 與視差）；做不完的列在「未完成」照實回報 |
-| 鐵律退步（15 件、連結一字不差、excluded 等） | 每次修改後重跑 Playwright 驗收，不通過不推 |
+| `list.relationsTitle` | 作品關係 |
+| `list.legendTitle` | 狀態圖例 |
+| `legend.statusTitle` | 狀態圖例 |
+| `detail.verification` | 驗證： |
 
-## 6. 分支與回退
+「尚未串接入口」這幾個字用 v2 的 `statusLabel`，不另寫。如果 v2 裡已有這些標題文字，就用 v2 的，上表作廢。
 
-- 從最新 `main`（`32305c7`）開新分支 `claude/project-thread-8cznat` 作業，完成後開 PR，由 Sky 合併。不直接改 `main`。
-- 合併前線上一直是目前的 v2。
-- 合併後若要回退：在 GitHub 上 revert 這次 PR 的合併 commit，Actions 會自動重新部署 v2。
-- 不讀 `.env`、不輸出金鑰，只動這個 repo。
+## 4. 不會動的東西
 
-## 7. 驗收與回報
+- 15 件作品的所有既有文字、23 個網址、excluded 四項、intro 全文（v2 若與 v1 有差，我會先逐欄比對回報，**不會默默套用**）。
+- 地圖、地形、步道、鏡頭、視差、帶我逛逛、印章、錨點、縮放、連線開關等功能程式不改邏輯。
+- 視覺風格、版面結構、既有 18 條 displayRules。
+- 不新增作品、連線、類型或狀態種類。
 
-- 驗收方式：靜態伺服器＋Playwright，在 1280、1180（iPad 橫）、820（iPad 直）、390px 寬度，淺色／深色／reduced-motion 下檢查。
-- **原任務書 8 項**：repo 裡沒有原任務書全文。我會依 PR #1 已驗收過的範圍（15 件、連結逐字一致、excluded 不出現、空子區不放假作品、無聯絡方式、蓬萊無遊玩連結、清單模式、手機可用）逐項檢查；Sky 若方便，回覆 yes 時順手貼上原文 8 項，我就照原文逐條對。
-- **v2 驗收**（本次）：等角厚度與遮擋、視差、聚焦推近與傾角、reduced-motion、不規則輪廓固定、面積隨件數、裝飾、步道與連線可分辨、標籤不重疊、手機只顯示編號、畫面程式無寫死文字或網址（grep 檢查）、README 三段教學、Actions 對壞 JSON 與缺欄位會失敗並指出行號（用故意改壞的副本實測）。
-- **無法確認**：iPad 實機順暢度與實機傾斜視差（只能用 Chromium 模擬觸控與降速），會照實標示。
-- 完成時回報：新增與修改的檔案、PR 連結、上述逐項結果、無法確認的地方。
+## 5. 風險與我會怎麼處理
 
-## 8. 實作時的調整（照實記錄）
+1. **v2 與 v1 不一致**：換檔前先跑逐欄比對（15 件、23 網址逐字、註記文字、excluded），有任何差異先列給 Sky，不自己決定。
+2. **status 文字被顯示規則刪字**：現有 displayRules 會把蓬萊的 status 尾巴「，不要給任何遊玩連結」在畫面上刪掉。任務書說 status「照舊顯示」，我理解為維持 v1 的畫面樣子，這條規則保留。
+3. **狀態篩選結果會變**：右側面板的狀態篩選會改用 statusKey，所以會有一件從「上線中」移到「有註記」。這是 v2 資料造成的預期結果，驗收時會指出是哪一件。
+4. **驗證說明裡的字被 excluded 檢查擋下**：例如說明若提到 englishspeak，部署檢查會失敗。真的發生就回報 Sky，不改寫原文。
+5. **v2 若沒有 `style` 欄位**：實線／虛線要改從 status（linked→實線、not-linked→虛線）決定，這個對應會寫在資料檔裡而不是程式裡；等看到 v2 再定。
+6. **符號**：島上節點目前用 SVG 畫符號（跨裝置不依賴字型）。我會讓 statusLegend 決定「哪件用哪個符號、叫什麼名字」，畫法沿用現有 SVG；若 v2 的 key 對不上現有三種，就改成直接顯示 v2 的符號字元。
 
-- **鏡頭補間**：縮放幅度大（全景⇄聚焦）時，補間期間改用外層 div 的 CSS transform 平移縮放，結束時才套用真正的 viewBox 與傾角；只是平移或小幅縮放時照常逐格更新。
-- **地圖文字**：加上 `text-rendering: geometricPrecision`。量測發現鏡頭每格縮放時，SVG 文字會整批重新排版，這一行讓 4 倍 CPU 降速下的鏡頭移動從約每秒 22～34 格提升到約 44～50 格。
-- **拿掉齒輪緩轉與旗幟飄動**（v2 的選做項目）：SVG 裡只要有一個元素在動，整張地圖每格都要重畫；拿掉後靜止時的重畫成本約降為五分之一。水波、雲、帆船在 SVG 外的獨立圖層，照常運作。
-- **作品連線的流動動畫**改為流動 4 圈就停（停下後仍是高亮虛線），理由同上。
-- **選取時的光圈脈衝**改為只動透明度（原本改線寬，會讓整張 SVG 每格重新排版）；探索進度條改用 transform 動畫，理由相同。
-- **作品連線**改成微彎的彩色弧線，和直的、木色的步道更容易分辨。
+## 6. 回退
+
+- 全部在新分支、一個 PR；不直接改 `main`。
+- 合併後有問題：在 GitHub 上對該 PR 按 Revert，或把 `site/data/works.json` 與 `site/js/` 回到 `a335194`。
+- 部署前有資料檢查，資料檔壞掉不會上線，線上維持上一版。
+
+## 7. 驗收（完成時照任務書 7 項逐項回報）
+
+本地用 Playwright 開站跑：15 件／各區件數、23 連結逐字對照 v1、作品關係 7 條與類型分布（3／1／1／1／1）、符號分布（8／5／2）、15 張詳情卡驗證列逐字比對（卡丁車、史地讚抽查句）、excluded 全頁搜尋、凍結原因全文、舊功能點按、390px 截圖、console 錯誤。合併上線後再對 GitHub Pages 驗一次。
