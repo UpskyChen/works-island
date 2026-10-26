@@ -415,10 +415,10 @@ export function createMap(stage, host, opts) {
   };
   svgEl.addEventListener('pointerover', (e) => {
     if (e.pointerType !== 'mouse' || pointers.size) return;
-    opts.onZoneHover(zoneOf(e.target));
+    opts.onZoneHover(zoneOf(e.target), e);
   });
   svgEl.addEventListener('pointerleave', (e) => {
-    if (e.pointerType === 'mouse') opts.onZoneHover(null);
+    if (e.pointerType === 'mouse') opts.onZoneHover(null, e);
   });
 
   // ---------- 手勢：拖曳平移、雙指縮放、觸控板縮放 ----------
