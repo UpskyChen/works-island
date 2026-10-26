@@ -54,7 +54,7 @@ async function start() {
     insets,
     onBackground: () => { stopTour(); clearSelection(); },
     onZone: (zid) => selectZone(zid),
-    onZoneHover: (zid) => (zid ? detail.showZone(zid) : detail.hidePreview())
+    onZoneHover: (zid, e) => hoverZone(zid, e)
   });
   const detail = createDetail(detailEl, model, {
     onClose: () => clearSelection({ returnFocus: true }),
@@ -99,6 +99,35 @@ async function start() {
     markNodes(app.layers.nodes, { selected: app.selected, dimmed: app.dimmed });
     markLinks(app.layers.links, app.selected);
   }
+
+  // ---------- 滑過分區的預覽 ----------
+  // 預覽卡浮在地圖左側。為了不在「卡片蓋住滑鼠 → 判定離開 → 收起 → 又顯示」之間反覆閃動：
+  // 稍等一下才顯示、離開後稍等一下才收起；滑鼠移到卡片上不收；滑鼠位置會被卡片蓋住時不顯示預覽。
+  let hoverTimer = null;
+  function hoverZone(zid, e) {
+    clearTimeout(hoverTimer);
+    if (!zid) {
+      if (e && e.relatedTarget && detailEl.contains(e.relatedTarget)) return;
+      hoverTimer = setTimeout(() => detail.hidePreview(), 250);
+      return;
+    }
+    if (detail.isSticky()) return;
+    if (isOverlay(detailEl)) {
+      const left = stage.getBoundingClientRect().left;
+      const cardW = detailEl.offsetWidth || Math.min(390, stage.clientWidth - 28); // 卡片還沒出現過時量不到寬度
+      if (e && e.clientX < left + 14 + cardW + 24) {
+        // 這個位置會被預覽卡蓋住：已經顯示的預覽維持原樣，不切換
+        return;
+      }
+    }
+    hoverTimer = setTimeout(() => detail.showZone(zid), 140);
+  }
+  detailEl.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') clearTimeout(hoverTimer); });
+  detailEl.addEventListener('pointerleave', (e) => {
+    if (e.pointerType !== 'mouse' || detail.isSticky()) return;
+    if (e.relatedTarget && map.svg.contains(e.relatedTarget)) return; // 回到地圖：交給地圖的滑過事件
+    hoverTimer = setTimeout(() => detail.hidePreview(), 250);
+  });
 
   // ---------- 選取與聚焦 ----------
   function select(id, { source = 'map', push = true, focusCard = false, animate = true } = {}) {
