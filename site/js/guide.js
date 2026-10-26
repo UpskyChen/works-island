@@ -1,19 +1,12 @@
 // 小貓嚮導（原創）：對話泡泡只會說兩種話——
-//   1. 下面 HINTS 列出的固定操作提示（README 有完整清單供站主審稿）
+//   1. works.json 的 ui.guide.hints 固定操作提示（站主可直接在資料檔修改）
 //   2. 資料檔裡的原文（分區名稱、作品狀態），原樣顯示、不加評論
 // 不會說出任何資料檔沒有的作品描述、成效或評價。
 import { el, svg } from './util.js';
+import { t } from './text.js';
 
-export const HINTS = {
-  welcome: '嗨！點一座島或一個編號看看。',
-  zone: '這一區的作品都列在卡片上，點一件看看。',
-  work: '卡片下方的按鈕可以直接打開作品。',
-  zoneDone: '這一區你逛完了！',
-  allDone: '全部作品都看過了，謝謝你逛完整座島！',
-  tour: '我帶你一件一件看，隨時可以按停止。',
-  tourStop: '導覽停下來了，想看哪裡就點哪裡。',
-  reset: '進度清除了，我們重新出發吧！'
-};
+// 提示句的代號；文字在 works.json 的 ui.guide.hints
+export const HINTS = Object.fromEntries(['welcome', 'zone', 'work', 'zoneDone', 'allDone', 'tour', 'tourStop', 'reset'].map((k) => [k, 'guide.hints.' + k]));
 
 function catSvg() {
   // 原創的小橘貓：圓臉、三角耳、額頭條紋、青綠色領巾
@@ -53,7 +46,7 @@ export function createGuide(root) {
   const text = el('p', { class: 'bubble-hint' });
   const data = el('p', { class: 'bubble-data' });
   const bubble = el('div', { class: 'bubble', role: 'status', 'aria-live': 'polite' }, [text, data]);
-  const cat = el('button', { type: 'button', class: 'cat-btn', 'aria-label': '小貓嚮導：再說一次', title: '小貓嚮導' }, catSvg());
+  const cat = el('button', { type: 'button', class: 'cat-btn', 'aria-label': t('guide.catLabel'), title: t('guide.catTitle') }, catSvg());
   root.append(bubble, cat);
 
   let last = { hint: HINTS.welcome, dataText: '' };
@@ -61,7 +54,7 @@ export function createGuide(root) {
 
   function say(hint, dataText = '') {
     last = { hint, dataText };
-    text.textContent = hint || '';
+    text.textContent = hint ? t(hint) : '';
     text.hidden = !hint;
     data.textContent = dataText || '';
     data.hidden = !dataText;

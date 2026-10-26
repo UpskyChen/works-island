@@ -162,6 +162,10 @@
   .panel-scroll { max-height: none; overflow: visible; }
   .detail { width: min(360px, calc(100% - 28px)); }
 }
+/* 手機窄螢幕又多了「傾斜視差」鈕時，工具列放不下：收起「清單」鈕（頁首的「島嶼／清單」切換可以做同一件事） */
+@media (max-width: 439px) {
+  .toolbar [data-act="tilt"]:not([hidden]) ~ [data-act="list"] { display: none; }
+}
 /* 小於 700px：詳情卡改為底部滑出；工具列只顯示圖示 */
 @media (max-width: 699px) {
   .detail {
@@ -251,7 +255,7 @@
 .pg-text { color: var(--muted); }
 .pg-reset { margin-left: auto; border: 0; background: var(--surface-2); border-radius: 999px; padding: 2px 10px; min-height: 30px; cursor: pointer; font-size: .8rem; }
 .pg-bar { margin-top: 6px; height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
-.pg-fill { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--accent), #f2a65a); transition: width .5s ease; }
+.pg-fill { display: block; height: 100%; width: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), #f2a65a); transform: scaleX(0); transform-origin: left center; transition: transform .5s ease; }
 .pg-note { margin: 6px 0 0; font-size: .78rem; color: var(--muted); }
 .prow { position: relative; }
 .prow .seen { margin-left: auto; }

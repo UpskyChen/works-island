@@ -23,6 +23,7 @@
   --beach: #f3e2b6;
   --foam: rgba(255, 255, 255, .7);
   --cloud: rgba(10, 60, 80, .14);
+  --cloud-top: rgba(255, 255, 255, .5);
 
   /* 五區五色（自行調配的低飽和粉彩）：地塊頂面／側面／深色字 */
   --z-campus-top: #bfdfae;   --z-campus-side: #8fbd7a;   --z-campus-ink: #3a7631;
@@ -64,6 +65,7 @@
     --beach: #5a5038;
     --foam: rgba(190, 235, 245, .16);
     --cloud: rgba(0, 0, 0, .25);
+    --cloud-top: rgba(190, 220, 235, .07);
 
     --z-campus-top: #3c5b35;   --z-campus-side: #273f23;   --z-campus-ink: #a4db94;
     --z-subjects-top: #5d4e27; --z-subjects-side: #413618; --z-subjects-ink: #f0cb6c;

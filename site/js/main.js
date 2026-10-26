@@ -1,5 +1,8 @@
-// 組裝：讀資料 → 標題／關於我／圖例 → 地圖、面板、詳情卡、清單 → 路由、工具列、帶我逛逛
-import { el, on, reducedMotion } from './util.js';
+// 組裝：讀資料 → 標題／關於我／圖例 → 地圖、面板、詳情卡、清單 → 路由、工具列、帶我逛逛、視差
+// 畫面上的文字全部來自 works.json（ui 段與作品資料），這裡不寫死任何文字或網址。
+import { el, on, reducedMotion, setStatusRules } from './util.js';
+import { setText, applyText, t } from './text.js';
+import { createParallax } from './parallax.js';
 import { loadData } from './data-loader.js';
 import { computeLayout, pickLayoutKey } from './layout.js';
 import { createMap } from './map.js';
@@ -16,6 +19,9 @@ const TOUR_MS = 4500;
 
 async function start() {
   const [{ model, layoutConfig }, propsDoc] = await Promise.all([loadData(), loadProps()]);
+  setText(model.ui);
+  setStatusRules(model.statusRules);
+  applyText();
   const app = { selected: null, lastId: null, mode: 'map', linksOn: true, dimmed: null, layoutKey: null, tour: null };
   const progress = createProgress(model);
   const guide = createGuide($('guide'));
@@ -50,11 +56,19 @@ async function start() {
   }
 
   const map = createMap(stage, $('map'), {
-    label: model.meta.title + '地圖',
+    label: t('site.mapLabel', { title: model.meta.title }),
     insets,
     onBackground: () => { stopTour(); clearSelection(); },
     onZone: (zid) => selectZone(zid),
-    onZoneHover: (zid, e) => hoverZone(zid, e)
+    onZoneHover: (zid, e) => hoverZone(zid, e),
+    onDrag: (dx, dy, ended) => parallax.drag(dx, dy, ended)
+  });
+  const parallax = createParallax(stage, {
+    sea: stage.querySelector('.sea-fx'),
+    land: $('map'),
+    sky: stage.querySelector('.sky-fx'),
+    shadows: () => map.layers.shadows,
+    scale: () => map.cam.k
   });
   const detail = createDetail(detailEl, model, {
     onClose: () => clearSelection({ returnFocus: true }),
@@ -84,7 +98,7 @@ async function start() {
     drawLinks(layers.links, model, lay);
     drawNodes(layers.nodes, model, lay, { onActivate: (id, o) => select(id, { source: 'map', focusCard: o.keyboard }), wasDragged: map.wasDragged });
     setLinksVisible(layers.links, app.linksOn);
-    map.setStamps(progress.doneZones());
+    map.setStamps(progress.doneZones()); // 也會重新定位所有直立物（含剛畫好的節點）
     // 鍵盤聚焦節點時，左側卡預覽該分區
     layers.nodes.addEventListener('focusin', (e) => {
       const n = e.target.closest('.node');
@@ -234,7 +248,8 @@ async function start() {
     tb('zone').disabled = !app.lastId;
     tb('links').setAttribute('aria-pressed', String(app.linksOn));
     tb('tour').setAttribute('aria-pressed', String(!!app.tour));
-    tb('tour').querySelector('.tb-label').textContent = app.tour ? '停止導覽' : '帶我逛逛';
+    tb('tour').querySelector('.tb-label').textContent = t(app.tour ? 'toolbar.tourStop' : 'toolbar.tour');
+    tb('tilt').setAttribute('aria-pressed', String(parallax.tiltOn));
   }
   toolbar.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-act]');
@@ -250,6 +265,7 @@ async function start() {
       setLinksVisible(app.layers.links, app.linksOn);
     } else if (act === 'tour') (app.tour ? stopTour() : startTour());
     else if (act === 'list') setMode('list');
+    else if (act === 'tilt') parallax.toggleTilt().then(updateToolbar);
     updateToolbar();
   });
 
@@ -290,6 +306,9 @@ async function start() {
     if (app.selected || detail.isSticky()) clearSelection({ returnFocus: true });
   });
   document.addEventListener('touchstart', () => {}, { passive: true }); // 讓 iPad 觸碰時套用 :active 按壓樣式
+
+  // 「傾斜視差」只在有動作感測的觸控裝置出現，且「減少動態效果」時不提供
+  tb('tilt').hidden = !(parallax.tiltSupported && window.matchMedia('(pointer: coarse)').matches && !reducedMotion());
 
   // ---------- 啟動 ----------
   build(true);
@@ -344,27 +363,27 @@ function renderHeader(model) {
   const ss = sentences(intro.text);
   $('tagline').textContent = ss[0] || '';
   $('total-header').textContent = String(model.works.length);
-  $('total-panel').textContent = model.works.length + ' 件';
-  $('about-heading').textContent = intro.heading || '關於我';
+  $('total-panel').textContent = t('panel.count', { n: model.works.length });
+  $('about-heading').textContent = intro.heading || '';
   const box = $('intro');
   box.textContent = '';
   for (let i = 0; i < ss.length; i += 2) box.appendChild(el('p', { text: ss.slice(i, i + 2).join('') }));
-  $('footer-text').textContent = `${meta.title}・${meta.owner}・資料版本 ${meta.dataVersion}`;
+  $('footer-text').textContent = t('site.footer', { title: meta.title, owner: meta.owner, version: meta.dataVersion });
 }
 
 function renderLegend(model) {
   const box = $('legend');
   box.textContent = '';
   const counts = model.zones.map((z) => model.worksInZone(z.id).length);
-  box.appendChild(el('p', { class: 'legend-total' }, ['全島共 ', el('strong', { id: 'total-legend', text: String(counts.reduce((a, b) => a + b, 0)) }), ' 件']));
+  box.appendChild(el('p', { class: 'legend-total' }, [t('legend.totalBefore'), el('strong', { id: 'total-legend', text: String(counts.reduce((a, b) => a + b, 0)) }), t('legend.totalAfter')]));
   box.appendChild(el('ul', { class: 'legend-zones' }, model.zones.map((z, i) => el('li', { class: 'zone-' + z.id }, [
     el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), z.name, el('strong', { text: String(counts[i]) })
   ]))));
   const styles = new Set(model.connections.map((c) => c.style));
   const lines = [];
-  if (styles.has('solid')) lines.push(el('li', null, [el('span', { class: 'line-sample solid', 'aria-hidden': 'true' }), '實線：作品關聯']));
-  if (styles.has('dashed')) lines.push(el('li', null, [el('span', { class: 'line-sample dashed', 'aria-hidden': 'true' }), '虛線：關聯但尚未串接入口']));
-  lines.push(el('li', null, [el('span', { class: 'line-sample bridge', 'aria-hidden': 'true' }), '步道（裝飾，不代表關聯）']));
+  if (styles.has('solid')) lines.push(el('li', null, [el('span', { class: 'line-sample solid', 'aria-hidden': 'true' }), t('legend.solid')]));
+  if (styles.has('dashed')) lines.push(el('li', null, [el('span', { class: 'line-sample dashed', 'aria-hidden': 'true' }), t('legend.dashed')]));
+  lines.push(el('li', null, [el('span', { class: 'line-sample bridge', 'aria-hidden': 'true' }), t('legend.walkway')]));
   box.appendChild(el('ul', { class: 'legend-lines' }, lines));
 }
 

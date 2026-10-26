@@ -1,4 +1,4 @@
-// 讀取 data/works.json 與 data/layout.json，套用顯示規則（display-rules.js），並做件數對帳
+// 讀取 data/works.json 與 data/layout.json，套用顯示規則（works.json 的 displayRules），並做件數對帳
 export async function loadData() {
   const [raw, layout] = await Promise.all([fetchJson('data/works.json'), fetchJson('data/layout.json')]);
   return { model: prepare(raw), layoutConfig: layout };
@@ -14,7 +14,7 @@ function applyDisplayRules(data) {
   const targets = {};
   data.works.forEach((w) => { targets[w.id] = w; });
   data.zones.forEach((z) => { targets['zone:' + z.id] = z; });
-  (window.DISPLAY_RULES || []).forEach((rule) => {
+  (data.displayRules || []).forEach((rule) => {
     const t = targets[rule.id];
     if (!t || typeof t[rule.field] !== 'string' || !t[rule.field].includes(rule.remove)) {
       console.warn('[display-rules] 找不到原文，規則未套用：', rule);
@@ -24,7 +24,7 @@ function applyDisplayRules(data) {
   });
 }
 
-function prepare(raw) {
+export function prepare(raw) {
   const data = JSON.parse(JSON.stringify(raw)); // 顯示用副本，原始資料不動
   applyDisplayRules(data);
   const works = data.works.map((w, i) => Object.assign(w, { num: i + 1 }));
@@ -48,6 +48,7 @@ function prepare(raw) {
 
   return {
     meta: data.meta, intro: data.intro, zones: data.zones, zoneById,
+    ui: data.ui || {}, statusRules: data.statusRules,
     works, byId, connections, worksInZone
   };
 }

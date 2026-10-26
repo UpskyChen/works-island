@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>阿喵老師的作品島</title>
+  <title></title>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/island.css">
   <link rel="stylesheet" href="css/panel.css">
@@ -13,66 +13,72 @@
   <header class="top wrap">
     <div class="title-card">
       <p class="owner" id="site-owner"></p>
-      <h1 id="site-title">阿喵老師的作品島</h1>
+      <h1 id="site-title"></h1>
       <p class="tagline" id="tagline"></p>
-      <p class="total">共 <strong id="total-header">–</strong> 件作品</p>
-      <div class="mode-switch" role="group" aria-label="瀏覽方式">
-        <button type="button" id="mode-map" aria-pressed="true"><span aria-hidden="true">⬡</span> 島嶼</button>
-        <button type="button" id="mode-list" aria-pressed="false"><span aria-hidden="true">☰</span> 清單</button>
+      <p class="total"><span data-t="site.totalBefore"></span><strong id="total-header"></strong><span data-t="site.totalAfter"></span></p>
+      <div class="mode-switch" role="group" data-t-aria="site.modeGroup">
+        <button type="button" id="mode-map" aria-pressed="true"><span aria-hidden="true">⬡</span> <span data-t="site.modeMap"></span></button>
+        <button type="button" id="mode-list" aria-pressed="false"><span aria-hidden="true">☰</span> <span data-t="site.modeList"></span></button>
       </div>
     </div>
     <details class="about" id="about" open>
-      <summary><h2 id="about-heading">關於我</h2></summary>
+      <summary><h2 id="about-heading"></h2></summary>
       <div id="intro"></div>
     </details>
   </header>
 
   <main class="wrap">
-    <section id="map-mode" class="stage-wrap" aria-label="島嶼探索">
+    <section id="map-mode" class="stage-wrap" data-t-aria="site.stageLabel">
       <div class="stage" id="stage">
         <div class="sea-fx" aria-hidden="true">
           <div class="waves"></div>
-          <div class="cloud c1"></div>
-          <div class="cloud c2"></div>
           <svg class="boat b1" viewBox="0 0 40 40"><path class="hull" d="M5 27 L35 27 L30 34 L10 34 Z"/><path class="mast" d="M20 6 V27"/><path class="sail" d="M21 7 L33 25 L21 25 Z"/><path class="sail2" d="M19 11 L10 25 L19 25 Z"/></svg>
           <svg class="boat b2" viewBox="0 0 40 40"><path class="hull" d="M5 27 L35 27 L30 34 L10 34 Z"/><path class="mast" d="M20 6 V27"/><path class="sail" d="M21 7 L33 25 L21 25 Z"/><path class="sail2" d="M19 11 L10 25 L19 25 Z"/></svg>
         </div>
 
         <div class="map" id="map"></div>
 
+        <div class="sky-fx" aria-hidden="true">
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+          <div class="cloud c3"></div>
+        </div>
+
         <aside class="detail" id="detail" hidden aria-live="polite">
-          <button type="button" class="detail-close" aria-label="關閉詳情，回到全景">✕</button>
+          <button type="button" class="detail-close" data-t-aria="detail.close">✕</button>
           <div class="detail-body"></div>
         </aside>
 
         <div class="guide" id="guide"></div>
 
-        <nav class="toolbar" id="toolbar" aria-label="地圖工具">
-          <button type="button" data-act="pano" title="全景"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="tb-label">全景</span></button>
-          <button type="button" data-act="zone" title="回到本區"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8"/></svg><span class="tb-label">回到本區</span></button>
-          <button type="button" data-act="out" title="縮小" aria-label="縮小"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
-          <button type="button" data-act="in" title="放大" aria-label="放大"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button>
-          <button type="button" data-act="links" aria-pressed="true" title="連線開關"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18a2 2 0 1 0 0.01 0M18 6a2 2 0 1 0 0.01 0M7.5 16.5l9-9"/></svg><span class="tb-label">連線</span></button>
-          <button type="button" data-act="tour" aria-pressed="false" title="帶我逛逛"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7l-11 7Z"/></svg><span class="tb-label">帶我逛逛</span></button>
-          <button type="button" data-act="list" title="切換到清單"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span class="tb-label">清單</span></button>
+        <nav class="toolbar" id="toolbar" data-t-aria="toolbar.label">
+          <button type="button" data-act="pano" data-t-title="toolbar.pano"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="tb-label" data-t="toolbar.pano"></span></button>
+          <button type="button" data-act="zone" data-t-title="toolbar.zone"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8"/></svg><span class="tb-label" data-t="toolbar.zone"></span></button>
+          <button type="button" data-act="out" data-t-title="toolbar.zoomOut" data-t-aria="toolbar.zoomOut"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+          <button type="button" data-act="in" data-t-title="toolbar.zoomIn" data-t-aria="toolbar.zoomIn"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button>
+          <button type="button" data-act="links" aria-pressed="true" data-t-title="toolbar.linksTitle"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18a2 2 0 1 0 0.01 0M18 6a2 2 0 1 0 0.01 0M7.5 16.5l9-9"/></svg><span class="tb-label" data-t="toolbar.links"></span></button>
+          <button type="button" data-act="tour" aria-pressed="false" data-t-title="toolbar.tour"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7l-11 7Z"/></svg><span class="tb-label" data-t="toolbar.tour"></span></button>
+          <button type="button" data-act="tilt" aria-pressed="false" data-t-title="toolbar.tiltTitle" hidden><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v18H7Z M10 18h4"/><path d="M3 9c-1 2-1 4 0 6M21 9c1 2 1 4 0 6"/></svg><span class="tb-label" data-t="toolbar.tilt"></span></button>
+          <button type="button" data-act="list" data-t-title="toolbar.listTitle"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span class="tb-label" data-t="toolbar.list"></span></button>
         </nav>
       </div>
 
-      <aside class="panel" id="panel" aria-label="作品一覽">
+      <aside class="panel" id="panel" data-t-aria="panel.title">
         <div class="panel-head">
-          <h2>作品一覽 <span class="panel-count" id="total-panel"></span></h2>
-          <button type="button" class="panel-toggle" aria-expanded="true" aria-controls="panel">收合 ›</button>
+          <h2><span data-t="panel.title"></span> <span class="panel-count" id="total-panel"></span></h2>
+          <button type="button" class="panel-toggle" aria-expanded="true" aria-controls="panel" data-t="panel.collapse"></button>
         </div>
         <div class="panel-tools"></div>
         <div class="panel-scroll"></div>
       </aside>
-      <button type="button" class="panel-open" id="panel-open" hidden>‹ 作品一覽</button>
+      <button type="button" class="panel-open" id="panel-open" hidden data-t="panel.open"></button>
 
       <div class="legend" id="legend"></div>
     </section>
 
-    <section id="list-view" class="list-view" hidden aria-label="作品清單"></section>
+    <section id="list-view" class="list-view" hidden data-t-aria="list.label"></section>
 
+    <!-- 以下兩句是唯一寫在畫面程式裡的文字：資料檔讀不到時，畫面無法從資料檔取得文字 -->
     <noscript><p>本站需要啟用 JavaScript 才能顯示作品。</p></noscript>
     <p id="load-error" class="load-error" hidden>作品資料載入失敗。請以本機靜態伺服器開啟（見 README），不要直接用 file:// 開檔。</p>
   </main>
@@ -81,7 +87,6 @@
     <div class="wrap" id="footer-text"></div>
   </footer>
 
-  <script src="js/display-rules.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
