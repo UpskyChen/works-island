@@ -564,5 +564,216 @@
       "name": "學校網路架構 repo",
       "reason": "非公開且屬校內基礎設施，不展示。"
     }
+  ],
+  "ui": {
+    "說明": "網站畫面上的所有按鈕、標題與提示文字。可以直接修改引號裡的字；{n}、{name} 這種大括號是程式會自動填入的數字或名稱，請保留。",
+    "site": {
+      "totalBefore": "共 ",
+      "totalAfter": " 件作品",
+      "modeGroup": "瀏覽方式",
+      "modeMap": "島嶼",
+      "modeList": "清單",
+      "mapLabel": "{title}地圖",
+      "stageLabel": "島嶼探索",
+      "footer": "{title}・{owner}・資料版本 {version}"
+    },
+    "toolbar": {
+      "label": "地圖工具",
+      "pano": "全景",
+      "zone": "回到本區",
+      "zoomOut": "縮小",
+      "zoomIn": "放大",
+      "links": "連線",
+      "linksTitle": "連線開關",
+      "tour": "帶我逛逛",
+      "tourStop": "停止導覽",
+      "list": "清單",
+      "listTitle": "切換到清單",
+      "tilt": "傾斜視差",
+      "tiltTitle": "用 iPad 傾斜帶動畫面（需要允許動作感測）"
+    },
+    "legend": {
+      "totalBefore": "全島共 ",
+      "totalAfter": " 件",
+      "solid": "實線：作品關聯",
+      "dashed": "虛線：關聯但尚未串接入口",
+      "walkway": "步道（裝飾，不代表關聯）"
+    },
+    "panel": {
+      "title": "作品一覽",
+      "count": "{n} 件",
+      "collapse": "收合 ›",
+      "open": "‹ 作品一覽",
+      "progressTitle": "你的探索進度",
+      "progressText": "已看過 {n}／{total} 件",
+      "progressReset": "重新開始",
+      "progressNoStorage": "這個瀏覽器無法保存進度，關掉頁面後會重新計算。",
+      "searchPlaceholder": "搜尋作品、標籤、分區…",
+      "searchLabel": "搜尋作品",
+      "filterGroup": "依狀態篩選",
+      "filterAll": "全部",
+      "tabsLabel": "面板分頁",
+      "tabZones": "分區",
+      "tabLinks": "連線",
+      "empty": "找不到符合的作品，換個關鍵字或篩選條件試試看。",
+      "clear": "清除搜尋與篩選",
+      "seen": "看過",
+      "done": "已逛完",
+      "linkSolid": "實線｜",
+      "linkDashed": "虛線｜"
+    },
+    "list": {
+      "label": "作品清單",
+      "titleBefore": "作品清單・共 ",
+      "titleAfter": " 件",
+      "zoneTitle": "{name}（{n} 件）",
+      "subTitle": "{name}（{n}）",
+      "locate": "在島上定位",
+      "locateLabel": "在島上定位：{name}"
+    },
+    "detail": {
+      "close": "關閉詳情，回到全景",
+      "audience": "對象：",
+      "problem": "問題",
+      "approach": "做法",
+      "result": "成果",
+      "note": "說明　",
+      "freeze": "凍結原因　",
+      "subzonesTitle": "站內五小區，共 {n} 個子頁",
+      "subzoneItem": "{name}（{n}）",
+      "relation": "關聯：",
+      "zoneKicker": "目前選擇的分區",
+      "zoneCount": "{n} 件",
+      "seen": "看過",
+      "done": "已逛完"
+    },
+    "status": {
+      "live": "上線中",
+      "pending": "狀態有註記",
+      "frozen": "凍結",
+      "nodeLabel": "{num}. {name}（{kind}：{status}）"
+    },
+    "map": {
+      "doneStamp": "已逛完",
+      "linkTitle": "{from} → {to}：{label}"
+    },
+    "guide": {
+      "catLabel": "小貓嚮導：再說一次",
+      "catTitle": "小貓嚮導",
+      "hints": {
+        "welcome": "嗨！點一座島或一個編號看看。",
+        "zone": "這一區的作品都列在卡片上，點一件看看。",
+        "work": "卡片下方的按鈕可以直接打開作品。",
+        "zoneDone": "這一區你逛完了！",
+        "allDone": "全部作品都看過了，謝謝你逛完整座島！",
+        "tour": "我帶你一件一件看，隨時可以按停止。",
+        "tourStop": "導覽停下來了，想看哪裡就點哪裡。",
+        "reset": "進度清除了，我們重新出發吧！"
+      }
+    }
+  },
+  "statusRules": {
+    "說明": "狀態判斷：frozenZones 裡的分區一律算「凍結」；作品 status 文字含有 pendingKeywords 任一詞就算「狀態有註記」；其餘算「上線中」。",
+    "frozenZones": [
+      "frozen"
+    ],
+    "pendingKeywords": [
+      "待",
+      "尚未",
+      "升級中",
+      "需登入"
+    ]
+  },
+  "displayRules": [
+    {
+      "id": "sky-games",
+      "field": "problem",
+      "remove": "（站主本人 README 原意）"
+    },
+    {
+      "id": "math-5",
+      "field": "problem",
+      "remove": "（站主本人 README 原意）"
+    },
+    {
+      "id": "sky-games",
+      "field": "subzoneNote",
+      "remove": "（站主本人）"
+    },
+    {
+      "id": "english-speaking-coach",
+      "field": "result",
+      "remove": "舊的 englishspeak 站是練習版本，已由站主指示不收錄，不要放它的連結。"
+    },
+    {
+      "id": "english-1000-words",
+      "field": "displayNote",
+      "remove": "展示必須照實註明，不得寫成他的原創教材內容。"
+    },
+    {
+      "id": "english-1000-words",
+      "field": "result",
+      "remove": "，計 1 件"
+    },
+    {
+      "id": "english-ww7",
+      "field": "result",
+      "remove": "原始子頁連結曾有 404，展示連結一律用站首頁，不要猜子頁網址。"
+    },
+    {
+      "id": "xikou-kart",
+      "field": "result",
+      "remove": "，展示時照實標註，不要寫成全部驗收完成"
+    },
+    {
+      "id": "social-history",
+      "field": "displayNote",
+      "remove": "卡片只顯示名稱、學科、連結與本註記，problem 與 result 欄位留空，不要編造內容、單元名稱或使用成效。"
+    },
+    {
+      "id": "sky-games",
+      "field": "result",
+      "remove": "母站計 1 件，17 子頁只在卡片內以五小區列出，不逐頁計件。"
+    },
+    {
+      "id": "sky-games",
+      "field": "subzoneNote",
+      "remove": "展示必須註明，"
+    },
+    {
+      "id": "sky-games",
+      "field": "subzoneNote",
+      "remove": "，不得寫成站主的遊戲作品"
+    },
+    {
+      "id": "sky-games",
+      "field": "subzoneNote",
+      "remove": "子頁一律連回母站首頁，不要猜子頁網址。"
+    },
+    {
+      "id": "angry-cat",
+      "field": "result",
+      "remove": "，卡片照實標註這個分發狀態"
+    },
+    {
+      "id": "ai-workbench",
+      "field": "approach",
+      "remove": "，照實呈現"
+    },
+    {
+      "id": "ai-workbench",
+      "field": "result",
+      "remove": "，展示時不要寫成已完成"
+    },
+    {
+      "id": "penglai-online",
+      "field": "status",
+      "remove": "，不要給任何遊玩連結"
+    },
+    {
+      "id": "zone:frozen",
+      "field": "note",
+      "remove": "，呈現語氣保持中性"
+    }
   ]
 }

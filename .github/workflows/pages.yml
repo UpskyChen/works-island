@@ -3,7 +3,9 @@ name: Deploy site to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'tools/validate-data.py', '.github/workflows/pages.yml']
+  pull_request:
+    paths: ['site/**', 'tools/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -12,11 +14,25 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # 先檢查資料檔：不是合法 JSON、缺少必要欄位或違反本站規則時，這一步會失敗並標出第幾行，
+  # 下面的部署就不會執行，線上網站維持上一版（不會變空白）。
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 檢查資料檔（site/data/works.json、site/data/layout.json）
+        run: python3 tools/validate-data.py
+
   deploy:
+    needs: validate
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

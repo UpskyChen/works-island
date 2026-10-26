@@ -1,5 +1,7 @@
-// 作品節點：膠囊（編號徽章＋名稱＋狀態圖示）；手機版只有編號徽章
-import { svg, shortName, statusKind, STATUS, statusIconGroup } from './util.js';
+// 作品節點：膠囊（編號徽章＋名稱＋狀態圖示）；手機版只有編號徽章。
+// 位置寫在 data-ax／data-ay，由地圖依目前傾角換算（節點是直立的，不會被壓扁）
+import { svg, shortName, statusKind, statusIconGroup } from './util.js';
+import { t } from './text.js';
 
 export function drawNodes(layer, model, layout, { onActivate, wasDragged }) {
   layer.textContent = '';
@@ -10,8 +12,8 @@ export function drawNodes(layer, model, layout, { onActivate, wasDragged }) {
     const kind = statusKind(w);
     const g = svg('g', {
       class: `node zone-${w.zone} st-${kind}`, 'data-id': w.id, 'data-zone': w.zone, tabindex: 0, role: 'button',
-      'aria-label': `${w.num}. ${w.name}（${STATUS[kind].label}：${w.status}）`,
-      transform: `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`
+      'aria-label': t('status.nodeLabel', { num: w.num, name: w.name, kind: t('status.' + kind), status: w.status }),
+      'data-ax': p.x.toFixed(1), 'data-ay': p.y.toFixed(1)
     });
     const activate = (e) => {
       if (wasDragged()) return;

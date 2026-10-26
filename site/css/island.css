@@ -1,17 +1,21 @@
-/* 地圖舞台、六角地塊、節點膠囊、連線、環境與開場動畫 */
+/* 地圖舞台、2.5D 島嶼（頂面、岸線、側面厚度、倒影）、裝飾、步道、節點膠囊、連線、視差圖層、環境與開場動畫 */
 .stage-wrap { position: relative; overflow-x: clip; --stage-h: clamp(560px, calc(100svh - 40px), 880px); }
 .stage {
   position: relative; height: var(--stage-h); border-radius: 26px; overflow: hidden;
   background: radial-gradient(120% 90% at 50% 40%, var(--sea) 55%, var(--sea-deep) 100%);
   box-shadow: inset 0 0 0 1px var(--border);
 }
-.map { position: absolute; inset: 0; }
+.map { position: absolute; inset: 0; will-change: transform; }
+.cam-layer { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+.sea-fx, .sky-fx { will-change: transform; }
 .island-map {
   display: block; width: 100%; height: 100%; font-family: var(--font);
   touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
-  will-change: transform; cursor: grab;
+  cursor: grab;
 }
 .island-map:active { cursor: grabbing; }
+/* 地圖文字不依縮放比例重新排版（鏡頭移動時每格都會縮放，這樣 iPad 上順很多），放大後字形也更平滑 */
+.island-map text { text-rendering: geometricPrecision; }
 
 /* ---------- 環境動態（在地圖下層的獨立圖層，只動 transform，不會蓋住節點與文字） ---------- */
 .sea-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
@@ -40,31 +44,56 @@
 .boat.b1 { top: 5%; animation: sail 95s linear infinite alternate; }
 .boat.b2 { bottom: 14%; width: 26px; height: 26px; animation: sail 130s linear infinite alternate-reverse; }
 @keyframes sail { from { transform: translate3d(2vw, 0, 0); } to { transform: translate3d(min(92vw, 1240px), 6px, 0); } }
-.cam-moving .sea-fx *, .cam-moving .island-map * { animation-play-state: paused !important; }
+.cam-moving .sea-fx *, .cam-moving .sky-fx *, .cam-moving .island-map * { animation-play-state: paused !important; }
 
-/* ---------- 六角地塊 ---------- */
-.island .shore { fill: var(--beach); stroke: var(--beach); stroke-linejoin: round; }
+/* 雲層：在地圖上方、最前面的視差圖層；很淡、不接收點擊，不影響閱讀 */
+.sky-fx { position: absolute; inset: -30px; overflow: hidden; pointer-events: none; }
+.sky-fx .cloud { background: radial-gradient(closest-side, var(--cloud-top), transparent); }
+.sky-fx .cloud.c1 { top: 8%; }
+.sky-fx .cloud.c2 { top: 62%; }
+.sky-fx .cloud.c3 { top: 34%; width: 220px; height: 90px; animation-duration: 140s; animation-delay: -30s; }
+
+/* ---------- 2.5D 島嶼 ---------- */
 .island .side { fill: var(--side); }
-.island .top { fill: var(--top); stroke: var(--side); stroke-width: .8; stroke-opacity: .55; }
-.island .cell-tint { fill: #fff; fill-opacity: .28; }
-.island .cell-lot { fill: var(--beach); fill-opacity: .9; stroke: var(--side); stroke-width: .8; stroke-dasharray: 3 3; }
-.island .cell-frame { fill: none; stroke: var(--ink); stroke-opacity: .28; stroke-width: 1.2; }
-.island .cell-frame.empty { stroke-dasharray: 5 5; }
-.zone-frozen.island .top { stroke: #fff; stroke-opacity: .6; stroke-dasharray: 2 3; }
+.island .side-low { fill: color-mix(in srgb, var(--side) 72%, #1b2a2e); }
+.island .side-high { fill: color-mix(in srgb, var(--side) 85%, #fff); }
+.island .shore { fill: var(--beach); }
+.island .top { fill: var(--top); }
+.island .top-light { fill: #fff; opacity: .16; }
+.island .cell-tint { fill: #fff; fill-opacity: .3; stroke: var(--ink); stroke-opacity: .22; stroke-width: 1.2; }
+.island .cell-lot { fill: var(--beach); fill-opacity: .85; stroke: var(--side); stroke-width: 1.2; stroke-dasharray: 5 5; }
+.zone-frozen.island .top-light { opacity: .35; }
 @media (prefers-color-scheme: dark) {
-  .island .cell-tint { fill: #000; fill-opacity: .18; }
-  .zone-frozen.island .top { stroke: #9fb6c4; stroke-opacity: .4; }
+  .island .cell-tint { fill: #000; fill-opacity: .16; }
+  .island .top-light { opacity: .06; }
+}
+
+/* 小浮島（不屬於任何分區，用中性的草地色） */
+.islet { --top: #a9d39a; --side: #7fae73; }
+.islet .side { fill: var(--side); }
+.islet .shore { fill: var(--beach); }
+.islet .top { fill: var(--top); }
+.islet .foam, .sandbar .sb-foam { fill: none; stroke: var(--foam); stroke-linejoin: round; }
+.sandbar .sb-sand { fill: var(--beach); opacity: .92; }
+.sandbar .sb-foam { fill: var(--foam); }
+.reef .reef-foam { fill: var(--foam); opacity: .55; }
+.reef .reef-rock { fill: #6f7f86; }
+@media (prefers-color-scheme: dark) {
+  .islet { --top: #3f5e3a; --side: #2b4228; }
+  .reef .reef-rock { fill: #42515a; }
 }
 
 /* 分區標籤、子區名稱、告示牌 */
 .zone-label .zl-body { fill: var(--surface); stroke: var(--ink); stroke-opacity: .35; }
 .zone-label .zl-badge { fill: var(--ink); }
+.zone-label .zl-body { filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .12)); }
 .zone-label .zl-count { fill: var(--on-ink); font-weight: 800; text-anchor: middle; }
 .zone-label .zl-name { fill: var(--text); font-weight: 800; }
 .cell-name { fill: var(--text); font-weight: 800; paint-order: stroke; stroke: var(--surface); stroke-width: 3.5px; stroke-linejoin: round; }
 .cell-count { fill: var(--muted); font-weight: 600; }
 .sign-board { fill: #f9f1de; stroke: #8a6a45; stroke-width: 1.5; }
 .sign-post { fill: #8a6a45; }
+.sign-shadow { fill: #1d3a2a; opacity: .2; }
 .sign-text { fill: #4d3a24; text-anchor: middle; }
 @media (prefers-color-scheme: dark) {
   .sign-board { fill: #3b3326; stroke: #b0916a; }
@@ -91,20 +120,16 @@
   .prop .pr-w { fill: #efe9df; }
   .prop .pr-ice { stroke: #a8d4ea; }
 }
-.prop .gear-spin, .prop .flag-cloth { transform-box: fill-box; transform-origin: center; }
-.prop .gear-spin { animation: spin 16s linear infinite; }
-.prop .flag-cloth { transform-origin: left center; animation: flag 2.4s ease-in-out infinite alternate; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes flag { from { transform: skewY(-4deg) scaleX(.94); } to { transform: skewY(3deg) scaleX(1); } }
+/* v3：拿掉齒輪緩轉與旗幟飄動。SVG 裡只要有一個元素在動，整張地圖每格都得重畫，iPad 上很耗電；水波、雲、帆船在 SVG 外的獨立圖層，不受影響 */
 
 /* ---------- 連線 ---------- */
-.link path { fill: none; stroke-linecap: round; }
+.link path { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .link .link-base { stroke: var(--link); stroke-width: 3; opacity: .85; transition: opacity .25s; }
 .link.dashed .link-base { stroke-dasharray: 8 7; }
 .link .link-flow { stroke: var(--accent); stroke-width: 3.6; opacity: 0; stroke-dasharray: 7 9; }
 .links.has-active .link .link-base { opacity: .18; }
 .links.has-active .link.is-active .link-base { opacity: .35; }
-.link.is-active .link-flow { opacity: 1; animation: flow .9s linear infinite; }
+.link.is-active .link-flow { opacity: 1; animation: flow .9s linear 4; } /* 流動幾圈就停（停下後仍是高亮虛線），不讓整張地圖一直重畫 */
 @keyframes flow { to { stroke-dashoffset: -32; } }
 .links.is-hidden { display: none; }
 
@@ -134,7 +159,8 @@
 .node.is-selected .cap-body { stroke: var(--accent); stroke-width: 2.2; stroke-opacity: 1; }
 .node.is-dim { opacity: .22; }
 .node.pulse .cap-ring { animation: ring 1s ease-out 2; }
-@keyframes ring { 0% { opacity: 1; stroke-width: 3; } 100% { opacity: 0; stroke-width: 14; } }
+/* 只動 opacity：改 stroke-width 或 transform 會讓整張 SVG 每格重新排版 */
+@keyframes ring { 0%, 100% { opacity: 1; } 50% { opacity: .15; } }
 
 /* ---------- 開場：地塊依序浮出水面 ---------- */
 .intro .island { animation: rise .7s cubic-bezier(.2, .9, .3, 1.15) both; }
@@ -161,11 +187,14 @@
 .island .foam { fill: none; stroke: var(--foam); stroke-linejoin: round; }
 @media (prefers-color-scheme: dark) { .island-shadow { fill: #000; opacity: .35; } }
 
-/* 木橋：中性木色的裝飾步道（作品連線是彩色線，兩者不同） */
-.bridge path { fill: none; stroke-linecap: butt; }
-.bridge-shadow { stroke: #04394a; opacity: .18; }
-.bridge-deck { stroke: var(--wood); }
-.bridge-planks { stroke: var(--wood-dark); }
+/* 步道：中性木色的裝飾拱橋／棧道（作品連線是彩色線，兩者不同） */
+.walkway path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wk-shadow { stroke: #04394a; opacity: .16; }
+.wk-post { stroke: var(--wood-dark); stroke-linecap: butt; }
+.wk-edge { stroke: var(--wood-dark); }
+.wk-deck { stroke: var(--wood); }
+.wk-planks { stroke: var(--wood-dark); stroke-linecap: butt; opacity: .7; }
+.wk-deck.wk-deck { stroke-linecap: butt; }
 
 /* 景物與地標的顏色 */
 .prop .sc-shadow { fill: #1d3a2a; opacity: .18; }
@@ -206,8 +235,8 @@
 
 /* 插圖資產槽：圖片載入成功後隱藏該區的 SVG 地塊與景物（標籤、節點、連線仍在上層） */
 .zone-art { pointer-events: none; }
-.island.has-art .foam, .island.has-art .shore, .island.has-art .side, .island.has-art .top,
-.island.has-art .cell-tint, .island.has-art .cell-lot, .island.has-art .prop, .island.has-art .scenery { display: none; }
+.island.has-art .foam, .island.has-art .shore, .island.has-art .side, .island.has-art .top, .island.has-art .top-light,
+.island.has-art .cell-tint, .island.has-art .cell-lot { display: none; }
 
 /* 已逛完章 */
 .stamp { pointer-events: none; animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) both; }

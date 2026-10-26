@@ -40,8 +40,9 @@ const bus = new EventTarget();
 export const emit = (type, detail) => bus.dispatchEvent(new CustomEvent(type, { detail }));
 export const on = (type, fn) => bus.addEventListener(type, (e) => fn(e.detail));
 
-const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-export const reducedMotion = () => motionQuery.matches;
+// 產生器（tools/gen-islands.mjs）會在 Node 裡 import 本檔，沒有 window 時一律視為不減少動態
+const motionQuery = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+export const reducedMotion = () => !!(motionQuery && motionQuery.matches);
 
 // 文字寬度估算（以一個中文字寬為 1）
 export function textUnits(text) {
@@ -77,12 +78,8 @@ export function wrapChars(text, perLine) {
   return lines;
 }
 
-// 狀態分類：顏色之外一律附圖示與文字
-export const STATUS = {
-  live: { label: '上線中' },
-  pending: { label: '狀態有註記' },
-  frozen: { label: '凍結' }
-};
+// 狀態分類：顏色之外一律附圖示與文字（文字在 works.json 的 ui.status）
+export const STATUS_KINDS = ['live', 'pending', 'frozen'];
 
 // 狀態圖示（16×16）：✓ 上線、半滿圓 有註記、雪花 凍結。用 SVG 畫，不依賴字型
 const ICON_PATHS = {
@@ -98,8 +95,11 @@ export function statusIconGroup(kind, x, y, size) {
   return svg('g', { class: 'cap-status', transform: `translate(${x - size / 2} ${y - size / 2}) scale(${size / 16})`, 'aria-hidden': 'true' },
     ICON_PATHS[kind].map(([tag, a]) => svg(tag, a)));
 }
+// 判斷規則在 works.json 的 statusRules：哪些分區算凍結、狀態文字含哪些字算「有註記」
+let statusRules = { frozenZones: [], pendingKeywords: [] };
+export function setStatusRules(r) { statusRules = Object.assign({ frozenZones: [], pendingKeywords: [] }, r || {}); }
 export function statusKind(w) {
-  if (w.zone === 'frozen') return 'frozen';
-  if (/待|尚未|升級中|需登入/.test(w.status)) return 'pending';
+  if (statusRules.frozenZones.includes(w.zone)) return 'frozen';
+  if (statusRules.pendingKeywords.some((k) => (w.status || '').includes(k))) return 'pending';
   return 'live';
 }

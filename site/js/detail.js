@@ -1,5 +1,6 @@
 // 詳情卡：問題 → 做法 → 成果＋狀態標籤＋說明／凍結原因＋連結（內容全部來自資料檔）
 import { el, statusKind, statusIcon } from './util.js';
+import { t } from './text.js';
 
 export function renderCard(w, model, { inList = false, onRelated } = {}) {
   const zone = model.zoneById[w.zone];
@@ -13,19 +14,19 @@ export function renderCard(w, model, { inList = false, onRelated } = {}) {
     ]));
     card.appendChild(el('h2', { class: 'card-title', id: 'detail-title', tabindex: '-1', text: w.name }));
   }
-  if (w.audience) card.appendChild(el('p', { class: 'card-meta', text: (inList ? meta.join('・') + '・' : '') + '對象：' + w.audience }));
+  if (w.audience) card.appendChild(el('p', { class: 'card-meta', text: (inList ? meta.join('・') + '・' : '') + t('detail.audience') + w.audience }));
 
   const kind = statusKind(w);
   const badges = el('p', { class: 'badges' }, el('span', { class: 'status st-' + kind }, [statusIcon(kind), w.status]));
   if (w.relationLabel) badges.appendChild(el('span', { class: 'rel-badge', text: w.relationLabel }));
   card.appendChild(badges);
 
-  const steps = [['問題', w.problem], ['做法', w.approach], ['成果', w.result]].filter((s) => s[1]);
+  const steps = [[t('detail.problem'), w.problem], [t('detail.approach'), w.approach], [t('detail.result'), w.result]].filter((s) => s[1]);
   if (steps.length) {
     card.appendChild(el('ol', { class: 'pra' }, steps.map(([k, v]) => el('li', null, [el('span', { class: 'pra-k', text: k }), el('span', { class: 'pra-v', text: v })]))));
   }
-  if (w.displayNote) card.appendChild(el('p', { class: 'note' }, [el('strong', { text: '說明　' }), w.displayNote]));
-  if (w.freezeReason) card.appendChild(el('p', { class: 'note freeze' }, [el('strong', { text: '凍結原因　' }), w.freezeReason]));
+  if (w.displayNote) card.appendChild(el('p', { class: 'note' }, [el('strong', { text: t('detail.note') }), w.displayNote]));
+  if (w.freezeReason) card.appendChild(el('p', { class: 'note freeze' }, [el('strong', { text: t('detail.freeze') }), w.freezeReason]));
 
   if (w.subzoneItems) {
     // 子頁一律連回母站首頁（資料檔第一個連結），不猜子頁網址
@@ -38,11 +39,11 @@ export function renderCard(w, model, { inList = false, onRelated } = {}) {
       if (!items) return;
       total += items.length;
       groups.appendChild(el('div', { class: 'subzone' }, [
-        el('h3', { text: `${name}（${items.length}）` }),
+        el('h3', { text: t('detail.subzoneItem', { name, n: items.length }) }),
         el('ul', null, items.map((it) => el('li', null, home ? el('a', { href: home, target: '_blank', rel: 'noopener' }, it) : it)))
       ]));
     });
-    card.appendChild(el('h3', { class: 'subzones-title', text: `站內五小區，共 ${total} 個子頁` }));
+    card.appendChild(el('h3', { class: 'subzones-title', text: t('detail.subzonesTitle', { n: total }) }));
     card.appendChild(groups);
     if (w.subzoneNote) card.appendChild(el('p', { class: 'note' }, w.subzoneNote));
   }
@@ -54,7 +55,7 @@ export function renderCard(w, model, { inList = false, onRelated } = {}) {
       return el('li', { class: c.style === 'dashed' ? 'dashed' : 'solid' }, [
         el('span', { class: 'rel-line', 'aria-hidden': 'true' }),
         el('span', null, [
-          '關聯：',
+          t('detail.relation'),
           onRelated ? el('button', { type: 'button', class: 'link-btn', onclick: () => onRelated(other.id) }, other.name) : other.name,
           '｜' + c.label
         ])
@@ -76,17 +77,17 @@ export function renderCard(w, model, { inList = false, onRelated } = {}) {
 export function renderZoneCard(zone, model, { progress, onPick }) {
   const works = model.worksInZone(zone.id);
   const card = el('article', { class: 'card zone-card zone-' + zone.id, 'data-zone-card': zone.id });
-  card.appendChild(el('p', { class: 'card-kicker' }, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), '目前選擇的分區']));
-  const head = el('h2', { class: 'card-title', id: 'detail-title', tabindex: '-1' }, [zone.name, el('span', { class: 'zc-count', text: works.length + ' 件' })]);
+  card.appendChild(el('p', { class: 'card-kicker' }, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), t('detail.zoneKicker')]));
+  const head = el('h2', { class: 'card-title', id: 'detail-title', tabindex: '-1' }, [zone.name, el('span', { class: 'zc-count', text: t('detail.zoneCount', { n: works.length }) })]);
   card.appendChild(head);
-  if (progress && progress.zoneDone(zone.id)) card.appendChild(el('p', { class: 'badges' }, el('span', { class: 'done-chip', text: '已逛完' })));
+  if (progress && progress.zoneDone(zone.id)) card.appendChild(el('p', { class: 'badges' }, el('span', { class: 'done-chip', text: t('detail.done') })));
   if (zone.note) card.appendChild(el('p', { class: 'note', text: zone.note }));
 
   const item = (w) => el('li', null, el('button', { type: 'button', class: 'zc-item' + (progress && progress.has(w.id) ? ' is-visited' : ''), onclick: () => onPick(w.id) }, [
     el('span', { class: 'num-badge zone-' + w.zone, text: String(w.num) }),
     el('span', { class: 'zc-name', text: w.name }),
     el('span', { class: 'status st-' + statusKind(w) }, [statusIcon(statusKind(w)), w.status]),
-    progress && progress.has(w.id) ? el('span', { class: 'seen', text: '看過' }) : null
+    progress && progress.has(w.id) ? el('span', { class: 'seen', text: t('detail.seen') }) : null
   ]));
 
   const usesCells = works.length && works.every((w) => w.subzone);
@@ -96,7 +97,7 @@ export function renderZoneCard(zone, model, { progress, onPick }) {
     const empties = Object.fromEntries((zone.emptySubzones || []).map((e) => [e.name, e.note]));
     names.forEach((name) => {
       const list = works.filter((w) => w.subzone === name);
-      card.appendChild(el('h3', { class: 'zc-sub', text: `${name}（${list.length}）` }));
+      card.appendChild(el('h3', { class: 'zc-sub', text: t('list.subTitle', { name, n: list.length }) }));
       if (list.length) card.appendChild(el('ul', { class: 'zc-list' }, list.map(item)));
       else card.appendChild(el('p', { class: 'empty-sub', text: empties[name] || '' }));
     });

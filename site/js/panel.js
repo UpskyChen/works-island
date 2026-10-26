@@ -1,39 +1,39 @@
 // 右側面板（搜尋、狀態篩選、分區／連線分頁）與清單模式
-import { el, statusKind, STATUS, statusIcon } from './util.js';
+import { el, statusKind, STATUS_KINDS, statusIcon } from './util.js';
 import { renderCard } from './detail.js';
-
-const FILTERS = [['all', '全部'], ['live', STATUS.live.label], ['pending', STATUS.pending.label], ['frozen', STATUS.frozen.label]];
+import { t } from './text.js';
 
 export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, progress, onReset }) {
   let query = '';
   let filter = 'all';
   let tab = 'zones';
   let selected = null;
+  const FILTERS = [['all', t('panel.filterAll')], ...STATUS_KINDS.map((k) => [k, t('status.' + k)])];
 
   const countOf = (k) => (k === 'all' ? model.works.length : model.works.filter((w) => statusKind(w) === k).length);
 
   // 你的探索進度（只存在這個瀏覽器）
-  const bar = el('div', { class: 'pg-bar', role: 'progressbar', 'aria-label': '你的探索進度', 'aria-valuemin': '0', 'aria-valuemax': String(model.works.length) }, el('span', { class: 'pg-fill' }));
+  const bar = el('div', { class: 'pg-bar', role: 'progressbar', 'aria-label': t('panel.progressTitle'), 'aria-valuemin': '0', 'aria-valuemax': String(model.works.length) }, el('span', { class: 'pg-fill' }));
   const pgText = el('span', { class: 'pg-text' });
-  const pgNote = el('p', { class: 'pg-note', hidden: true, text: '這個瀏覽器無法保存進度，關掉頁面後會重新計算。' });
+  const pgNote = el('p', { class: 'pg-note', hidden: true, text: t('panel.progressNoStorage') });
   const progressBox = el('div', { class: 'progress' }, [
     el('div', { class: 'pg-head' }, [
-      el('strong', { text: '你的探索進度' }), pgText,
-      el('button', { type: 'button', class: 'pg-reset', onclick: () => onReset() }, '重新開始')
+      el('strong', { text: t('panel.progressTitle') }), pgText,
+      el('button', { type: 'button', class: 'pg-reset', onclick: () => onReset() }, t('panel.progressReset'))
     ]),
     bar, pgNote
   ]);
 
   const search = el('input', {
-    type: 'search', class: 'search', placeholder: '搜尋作品、標籤、分區…', 'aria-label': '搜尋作品',
+    type: 'search', class: 'search', placeholder: t('panel.searchPlaceholder'), 'aria-label': t('panel.searchLabel'),
     autocomplete: 'off', oninput: (e) => { query = e.target.value.trim().toLowerCase(); refresh(); }
   });
-  const chips = el('div', { class: 'chips', role: 'group', 'aria-label': '依狀態篩選' }, FILTERS.map(([k, label]) => el('button', {
+  const chips = el('div', { class: 'chips', role: 'group', 'aria-label': t('panel.filterGroup') }, FILTERS.map(([k, label]) => el('button', {
     type: 'button', class: 'chip', 'data-filter': k, 'aria-pressed': String(k === filter),
     onclick: () => { filter = k; refresh(); }
   }, [k === 'all' ? null : statusIcon(k), label, el('span', { class: 'chip-count', text: String(countOf(k)) })])));
 
-  const tabs = el('div', { class: 'tabs', role: 'tablist', 'aria-label': '面板分頁' }, [['zones', '分區'], ['links', '連線']].map(([k, label]) => el('button', {
+  const tabs = el('div', { class: 'tabs', role: 'tablist', 'aria-label': t('panel.tabsLabel') }, [['zones', t('panel.tabZones')], ['links', t('panel.tabLinks')]].map(([k, label]) => el('button', {
     type: 'button', role: 'tab', class: 'tab', id: 'tab-' + k, 'aria-controls': 'tabpanel-' + k, 'aria-selected': String(k === tab),
     onclick: () => { tab = k; refresh(); }
   }, label)));
@@ -41,8 +41,8 @@ export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, pro
   const zoneList = el('div', { class: 'tabpanel', id: 'tabpanel-zones', role: 'tabpanel', 'aria-labelledby': 'tab-zones' });
   const linkList = el('div', { class: 'tabpanel', id: 'tabpanel-links', role: 'tabpanel', 'aria-labelledby': 'tab-links', hidden: true });
   const empty = el('div', { class: 'empty-result', hidden: true }, [
-    el('p', { text: '找不到符合的作品，換個關鍵字或篩選條件試試看。' }),
-    el('button', { type: 'button', class: 'btn-ghost', onclick: () => { query = ''; search.value = ''; filter = 'all'; refresh(); search.focus(); } }, '清除搜尋與篩選')
+    el('p', { text: t('panel.empty') }),
+    el('button', { type: 'button', class: 'btn-ghost', onclick: () => { query = ''; search.value = ''; filter = 'all'; refresh(); search.focus(); } }, t('panel.clear'))
   ]);
 
   // 分區分頁
@@ -50,7 +50,7 @@ export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, pro
   model.zones.forEach((z) => {
     const works = model.worksInZone(z.id);
     const group = el('section', { class: 'pz zone-' + z.id, 'data-zone': z.id }, [
-      el('h3', { class: 'pz-title' }, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), z.name, el('span', { class: 'done-chip', hidden: true, text: '已逛完' }), el('span', { class: 'pz-count', text: works.length + ' 件' })])
+      el('h3', { class: 'pz-title' }, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), z.name, el('span', { class: 'done-chip', hidden: true, text: t('panel.done') }), el('span', { class: 'pz-count', text: t('panel.count', { n: works.length }) })])
     ]);
     const ul = el('ul', { class: 'pz-rows' });
     works.forEach((w) => {
@@ -61,7 +61,7 @@ export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, pro
           el('span', { class: 'prow-name', text: w.name }),
           el('span', { class: 'prow-status st-' + kind }, [statusIcon(kind), w.status])
         ]),
-        el('span', { class: 'seen', hidden: true, text: '看過' })
+        el('span', { class: 'seen', hidden: true, text: t('panel.seen') })
       ]);
       rows[w.id] = el('li', { 'data-id': w.id }, btn);
       ul.appendChild(rows[w.id]);
@@ -80,7 +80,7 @@ export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, pro
         el('span', { class: 'line-sample ' + c.style, 'aria-hidden': 'true' }),
         el('span', { class: 'num-badge zone-' + b.zone, text: String(b.num) }), b.name
       ]),
-      el('span', { class: 'plink-label', text: (c.style === 'dashed' ? '虛線｜' : '實線｜') + c.label })
+      el('span', { class: 'plink-label', text: t(c.style === 'dashed' ? 'panel.linkDashed' : 'panel.linkSolid') + c.label })
     ]));
   });
 
@@ -127,9 +127,9 @@ export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, pro
   function setProgress() {
     const n = progress.count();
     const total = progress.total();
-    pgText.textContent = `已看過 ${n}／${total} 件`;
+    pgText.textContent = t('panel.progressText', { n, total });
     bar.setAttribute('aria-valuenow', String(n));
-    bar.querySelector('.pg-fill').style.width = (total ? (n / total) * 100 : 0) + '%';
+    bar.querySelector('.pg-fill').style.transform = `scaleX(${total ? n / total : 0})`; // 用 transform 不用 width，動畫時不必重新排版
     pgNote.hidden = progress.storageOk;
     Object.keys(rows).forEach((id) => {
       const seen = progress.has(id);
@@ -152,7 +152,7 @@ export function renderListView(box, model, { onLocate }) {
     const works = model.worksInZone(z.id);
     count += works.length;
     const sec = el('section', { class: 'list-zone zone-' + z.id }, [
-      el('h3', null, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), `${z.name}（${works.length} 件）`])
+      el('h3', null, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), t('list.zoneTitle', { name: z.name, n: works.length })])
     ]);
     if (z.note) sec.appendChild(el('p', { class: 'zone-note', text: z.note }));
     const usesCells = works.length && works.every((w) => w.subzone);
@@ -162,7 +162,7 @@ export function renderListView(box, model, { onLocate }) {
       const empties = Object.fromEntries((z.emptySubzones || []).map((e) => [e.name, e.note]));
       names.forEach((name) => {
         const list = works.filter((w) => w.subzone === name);
-        sec.appendChild(el('h4', { class: 'list-sub', text: `${name}（${list.length}）` }));
+        sec.appendChild(el('h4', { class: 'list-sub', text: t('list.subTitle', { name, n: list.length }) }));
         if (list.length) sec.appendChild(listRows(list));
         else sec.appendChild(el('p', { class: 'empty-sub', text: empties[name] || '' }));
       });
@@ -171,7 +171,7 @@ export function renderListView(box, model, { onLocate }) {
     }
     return sec;
   });
-  box.appendChild(el('h2', { class: 'list-title' }, ['作品清單・共 ', el('strong', { id: 'total-list', text: String(count) }), ' 件']));
+  box.appendChild(el('h2', { class: 'list-title' }, [t('list.titleBefore'), el('strong', { id: 'total-list', text: String(count) }), t('list.titleAfter')]));
   sections.forEach((s) => box.appendChild(s));
 
   function listRows(works) {
@@ -186,7 +186,7 @@ export function renderListView(box, model, { onLocate }) {
           ]),
           renderCard(w, model, { inList: true })
         ]),
-        el('button', { type: 'button', class: 'locate', onclick: () => onLocate(w.id), 'aria-label': '在島上定位：' + w.name }, '在島上定位')
+        el('button', { type: 'button', class: 'locate', onclick: () => onLocate(w.id), 'aria-label': t('list.locateLabel', { name: w.name }) }, t('list.locate'))
       ]);
     }));
   }
