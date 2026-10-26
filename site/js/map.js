@@ -154,20 +154,20 @@ export function createMap(stage, host, opts) {
         if (w.relationLabel) busy.push({ x: p.x - 80, y: p.y + 14, w: 160, h: 26 });
       });
 
-      // 分區標籤：徽章（件數）＋區名
+      // 分區標籤：色點＋區名（不顯示件數，避免和作品編號混淆）
       const labelH = names ? 28 : 24;
       const font = names ? 15 : 12;
-      const count = model.worksInZone(z.id).length;
-      const labelW = labelH + 8 + textUnits(z.name) * font + 12;
+      const dotR = names ? 5 : 4;
+      const nameX = labelH / 2 + dotR + 6;
+      const labelW = nameX + textUnits(z.name) * font + 12;
       const lx = isl.x;
       const ly = isl.y + (m.head - labelH) / 2 - 4;
       labelBoxes[z.id] = { x: lx, y: ly, w: labelW, h: labelH };
       busy.push(grow({ x: lx, y: ly, w: labelW + (names ? 60 : 26), h: labelH }, 6));
       const label = svg('g', { class: 'zone-label zone-' + z.id, 'data-zone': z.id }, [
         svg('rect', { class: 'zl-body', x: 0, y: 0, width: labelW, height: labelH, rx: labelH / 2 }),
-        svg('circle', { class: 'zl-badge', cx: labelH / 2, cy: labelH / 2, r: labelH / 2 - 1.5 }),
-        svg('text', { class: 'zl-count', x: labelH / 2, y: labelH / 2, dy: '0.35em', 'font-size': font - 2, text: String(count) }),
-        svg('text', { class: 'zl-name', x: labelH + 6, y: labelH / 2, dy: '0.35em', 'font-size': font, text: z.name })
+        svg('circle', { class: 'zl-badge', cx: labelH / 2, cy: labelH / 2, r: dotR }),
+        svg('text', { class: 'zl-name', x: nameX, y: labelH / 2, dy: '0.35em', 'font-size': font, text: z.name })
       ]);
       layers.titles.appendChild(addUpright(label, lx, ly));
 
@@ -188,9 +188,7 @@ export function createMap(stage, host, opts) {
         const cf = names ? 14 : 11;
         busy.push({ x: b.x, y: b.y, w: b.w, h: m.cellHead });
         if (!c.works.length) busy.push(b);
-        const cname = svg('text', { class: 'cell-name', 'data-zone': z.id, x: 0, y: 0, 'font-size': cf }, [
-          c.name, svg('tspan', { class: 'cell-count', dx: 5, 'font-size': cf - 2, text: String(c.works.length) })
-        ]);
+        const cname = svg('text', { class: 'cell-name', 'data-zone': z.id, x: 0, y: 0, 'font-size': cf, text: c.name });
         layers.titles.appendChild(addUpright(cname, b.x + 10, b.y + (names ? 21 : 17)));
         const pname = (cfg.subzoneProps || {})[c.name];
         const cp = m.cellProp;
