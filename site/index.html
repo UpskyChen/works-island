@@ -2,44 +2,76 @@
 <html lang="zh-Hant-TW">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <title>阿喵老師的作品島</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/island.css">
+  <link rel="stylesheet" href="css/panel.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="wrap">
+  <header class="top wrap">
+    <div class="title-card">
+      <p class="owner" id="site-owner"></p>
       <h1 id="site-title">阿喵老師的作品島</h1>
-      <p id="tagline" class="tagline"></p>
+      <p class="tagline" id="tagline"></p>
       <p class="total">共 <strong id="total-header">–</strong> 件作品</p>
+      <div class="mode-switch" role="group" aria-label="瀏覽方式">
+        <button type="button" id="mode-map" aria-pressed="true"><span aria-hidden="true">⬡</span> 島嶼</button>
+        <button type="button" id="mode-list" aria-pressed="false"><span aria-hidden="true">☰</span> 清單</button>
+      </div>
     </div>
+    <details class="about" id="about" open>
+      <summary><h2 id="about-heading">關於我</h2></summary>
+      <div id="intro"></div>
+    </details>
   </header>
 
   <main class="wrap">
-    <section id="about" class="about" aria-labelledby="about-heading">
-      <h2 id="about-heading">關於我</h2>
-      <div id="intro"></div>
-    </section>
-
-    <section id="works" class="works" aria-labelledby="works-heading">
-      <div class="works-head">
-        <h2 id="works-heading">作品</h2>
-        <div class="mode-switch" role="group" aria-label="瀏覽方式">
-          <button type="button" id="mode-map" aria-pressed="true">島嶼探索</button>
-          <button type="button" id="mode-list" aria-pressed="false">清單</button>
+    <section id="map-mode" class="stage-wrap" aria-label="島嶼探索">
+      <div class="stage" id="stage">
+        <div class="sea-fx" aria-hidden="true">
+          <div class="waves"></div>
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+          <svg class="boat b1" viewBox="0 0 40 40"><path class="hull" d="M5 27 L35 27 L30 34 L10 34 Z"/><path class="mast" d="M20 6 V27"/><path class="sail" d="M21 7 L33 25 L21 25 Z"/><path class="sail2" d="M19 11 L10 25 L19 25 Z"/></svg>
+          <svg class="boat b2" viewBox="0 0 40 40"><path class="hull" d="M5 27 L35 27 L30 34 L10 34 Z"/><path class="mast" d="M20 6 V27"/><path class="sail" d="M21 7 L33 25 L21 25 Z"/><path class="sail2" d="M19 11 L10 25 L19 25 Z"/></svg>
         </div>
+
+        <div class="map" id="map"></div>
+
+        <aside class="detail" id="detail" hidden aria-live="polite">
+          <button type="button" class="detail-close" aria-label="關閉詳情，回到全景">✕</button>
+          <div class="detail-body"></div>
+        </aside>
+
+        <div class="guide" id="guide"></div>
+
+        <nav class="toolbar" id="toolbar" aria-label="地圖工具">
+          <button type="button" data-act="pano" title="全景"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="tb-label">全景</span></button>
+          <button type="button" data-act="zone" title="回到本區"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8"/></svg><span class="tb-label">回到本區</span></button>
+          <button type="button" data-act="out" title="縮小" aria-label="縮小"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+          <button type="button" data-act="in" title="放大" aria-label="放大"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button>
+          <button type="button" data-act="links" aria-pressed="true" title="連線開關"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18a2 2 0 1 0 0.01 0M18 6a2 2 0 1 0 0.01 0M7.5 16.5l9-9"/></svg><span class="tb-label">連線</span></button>
+          <button type="button" data-act="tour" aria-pressed="false" title="帶我逛逛"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7l-11 7Z"/></svg><span class="tb-label">帶我逛逛</span></button>
+          <button type="button" data-act="list" title="切換到清單"><svg class="tb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span class="tb-label">清單</span></button>
+        </nav>
       </div>
 
-      <div id="map-view">
-        <div id="legend" class="legend"></div>
-        <div id="map" class="map" aria-label="作品島地圖"></div>
-        <ol id="map-index" class="map-index" aria-label="編號對照"></ol>
-        <div id="card-panel" class="card-panel" aria-live="polite"></div>
-      </div>
+      <aside class="panel" id="panel" aria-label="作品一覽">
+        <div class="panel-head">
+          <h2>作品一覽 <span class="panel-count" id="total-panel"></span></h2>
+          <button type="button" class="panel-toggle" aria-expanded="true" aria-controls="panel">收合 ›</button>
+        </div>
+        <div class="panel-tools"></div>
+        <div class="panel-scroll"></div>
+      </aside>
+      <button type="button" class="panel-open" id="panel-open" hidden>‹ 作品一覽</button>
 
-      <div id="list-view" hidden></div>
+      <div class="legend" id="legend"></div>
     </section>
+
+    <section id="list-view" class="list-view" hidden aria-label="作品清單"></section>
 
     <noscript><p>本站需要啟用 JavaScript 才能顯示作品。</p></noscript>
     <p id="load-error" class="load-error" hidden>作品資料載入失敗。請以本機靜態伺服器開啟（見 README），不要直接用 file:// 開檔。</p>
@@ -50,6 +82,6 @@
   </footer>
 
   <script src="js/display-rules.js"></script>
-  <script src="js/app.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
