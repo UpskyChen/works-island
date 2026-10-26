@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>阿喵老師的作品島</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1 id="site-title">阿喵老師的作品島</h1>
+      <p id="tagline" class="tagline"></p>
+      <p class="total">共 <strong id="total-header">–</strong> 件作品</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="about" class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">關於我</h2>
+      <div id="intro"></div>
+    </section>
+
+    <section id="works" class="works" aria-labelledby="works-heading">
+      <div class="works-head">
+        <h2 id="works-heading">作品</h2>
+        <div class="mode-switch" role="group" aria-label="瀏覽方式">
+          <button type="button" id="mode-map" aria-pressed="true">島嶼探索</button>
+          <button type="button" id="mode-list" aria-pressed="false">清單</button>
+        </div>
+      </div>
+
+      <div id="map-view">
+        <div id="legend" class="legend"></div>
+        <div id="map" class="map" aria-label="作品島地圖"></div>
+        <ol id="map-index" class="map-index" aria-label="編號對照"></ol>
+        <div id="card-panel" class="card-panel" aria-live="polite"></div>
+      </div>
+
+      <div id="list-view" hidden></div>
+    </section>
+
+    <noscript><p>本站需要啟用 JavaScript 才能顯示作品。</p></noscript>
+    <p id="load-error" class="load-error" hidden>作品資料載入失敗。請以本機靜態伺服器開啟（見 README），不要直接用 file:// 開檔。</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap" id="footer-text"></div>
+  </footer>
+
+  <script src="js/display-rules.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
