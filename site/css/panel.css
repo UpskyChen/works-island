@@ -128,6 +128,21 @@
 .legend-total strong, .legend-zones strong { color: var(--accent); }
 .legend-lines { color: var(--muted); }
 
+/* ---------- 狀態圖例（島嶼圖例與清單模式共用） ---------- */
+.status-legend { flex-basis: 100%; min-width: 0; }
+.status-legend .sl-title { margin: 0 0 4px; font-weight: 700; }
+.status-legend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.legend .status-legend ul { display: grid; }
+.status-legend li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; }
+.legend .status-legend li { display: flex; }
+.status-legend .status { flex: none; }
+.sl-meaning { flex: 1 1 14em; min-width: 0; color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
+.list-view > .status-legend { margin: 8px 0 0; padding: 10px 14px; background: var(--surface-2); border-radius: 12px; }
+
+/* 詳情卡：驗證列 */
+.verify { margin: 0 0 12px; font-size: .92rem; color: var(--muted); overflow-wrap: anywhere; }
+.verify strong { color: var(--text); }
+
 /* ---------- 清單模式 ---------- */
 .list-view { padding-top: 4px; }
 .list-title { font-size: 1.2rem; margin: 0 0 6px; }
@@ -152,6 +167,21 @@
 }
 .locate:hover { background: var(--accent); color: var(--accent-ink); }
 .list-zone.zone-frozen .row details { filter: saturate(.7); }
+
+/* 清單模式：作品關係 */
+.list-relations { margin: 24px 0 0; }
+.list-relations > h3 { font-size: 1.1rem; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+.rel-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rel-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 0; padding: 8px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; min-width: 0; }
+.rel-ends { flex-basis: 100%; display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; min-width: 0; }
+.rel-ends .link-btn { text-align: left; overflow-wrap: anywhere; }
+.rel-arrow { color: var(--muted); }
+.rel-type { font-weight: 700; }
+.rel-label::before, .rel-status::before { content: "｜"; color: var(--muted); font-weight: 400; }
+.rel-meta { flex-basis: 100%; min-width: 0; overflow-wrap: anywhere; }
+.rel-status { color: var(--muted); }
+.rel-row.rs-not-linked { border: 1.5px dashed var(--border); background: transparent; color: var(--muted); }
+.rel-row.rs-not-linked .rel-status { font-weight: 700; }
 
 /* ---------- 斷點 ---------- */
 /* 小於 1000px：面板改排在地圖下方 */

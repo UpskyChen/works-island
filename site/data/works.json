@@ -11,7 +11,9 @@
     "owner": "Upsky（阿喵老師）",
     "sourceOfTruth": "本檔由站主本人提供的網址與 repo 逐件驗證後整理。任何欄位不足處保持空白或照實註記，禁止自行編造作品、數字、功能或連結。",
     "title": "阿喵老師的作品島",
-    "totalWorks": 15
+    "totalWorks": 15,
+    "schemaVersion": 2,
+    "upgradeNote": "v2 升級（2026-10-26）：連線改為正式資料紀錄（新增 id、type、status）；每件作品新增 statusKey 與 verification（驗證狀態）欄位；新增 statusLegend 狀態圖例定義。其餘作品內容、連結、註記與 v1 完全相同，未經站主確認不得改寫。"
   },
   "intro": {
     "contact": null,
@@ -96,11 +98,18 @@
       ],
       "result": "2026-10-12 全站上線並持續更新至 v234；內顯電腦幀時間由 37.5ms 優化到 8.6ms，並有自動降畫質機制。",
       "status": "已上線，持續更新",
+      "statusKey": "live",
       "tags": [
         "主站",
         "Three.js",
         "零成本靜態站"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "全站 2026-10-12 上線、持續更新至 v234；站台實際開啟確認。"
+      },
       "zone": "campus"
     },
     {
@@ -125,10 +134,17 @@
       "relationLabel": "3D 校園的延伸作品",
       "result": "2026-10-26 上 GitHub repo 並以 GitHub Pages 公開。README 註明 iPad 多點觸控與長時間效能仍待實機驗收，展示時照實標註，不要寫成全部驗收完成。",
       "status": "已上線（桌機已測，iPad 實機待驗收）",
+      "statusKey": "noted",
       "tags": [
         "延伸作品",
         "獨立小遊戲"
       ],
+      "verification": {
+        "level": "verified-partial",
+        "levelLabel": "部分驗證・待實機驗收",
+        "date": "2026-10-26",
+        "note": "repo 2026-10-26 建立、GitHub Pages 已公開、桌機已測（站主回報）；iPad 多點觸控與長時間效能待實機驗收。"
+      },
       "zone": "campus"
     },
     {
@@ -155,11 +171,18 @@
       ],
       "result": "兩個 Google Sites 站殼上線使用中（內容為同一工具，計 1 件）。",
       "status": "已上線",
+      "statusKey": "live",
       "subzone": "英文",
       "tags": [
         "英文",
         "數位化"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "兩個 Google Sites 站殼實際開啟確認，內容為同一工具、計 1 件；紙本原作非站主，見 displayNote。"
+      },
       "zone": "subjects"
     },
     {
@@ -181,12 +204,19 @@
       ],
       "result": "正式版在 sky-english 站的口說練習頁。舊的 englishspeak 站是練習版本，已由站主指示不收錄，不要放它的連結。",
       "status": "已上線（正式版）",
+      "statusKey": "live",
       "subzone": "英文",
       "tags": [
         "英文",
         "口說",
         "語音辨識"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "sky-english 口說練習頁實際開啟確認（朗讀、跟讀辨識、AI 虛擬人助理）；此為正式版，舊 englishspeak 站不收錄。"
+      },
       "zone": "subjects"
     },
     {
@@ -208,11 +238,18 @@
       ],
       "result": "Google Sites 上線使用中。原始子頁連結曾有 404，展示連結一律用站首頁，不要猜子頁網址。",
       "status": "已上線（以站首頁為準）",
+      "statusKey": "noted",
       "subzone": "英文",
       "tags": [
         "英文",
         "五上"
       ],
+      "verification": {
+        "level": "verified-partial",
+        "levelLabel": "部分驗證・以首頁為準",
+        "date": "2026-10-26",
+        "note": "站首頁實際開啟確認；原始子頁連結曾出現 404，展示一律連首頁，不猜子頁網址。"
+      },
       "zone": "subjects"
     },
     {
@@ -234,11 +271,18 @@
       ],
       "result": "Google Sites 上線使用中，署名 Made by Upsky (skps)。",
       "status": "已上線",
+      "statusKey": "live",
       "subzone": "英文",
       "tags": [
         "英文",
         "五下"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "Google Sites 實際開啟確認，上線使用中。"
+      },
       "zone": "subjects"
     },
     {
@@ -260,12 +304,19 @@
       "related": [],
       "result": "Google Sites 上線使用中，原始碼在 GitHub repo（4 個 html）。",
       "status": "已上線",
+      "statusKey": "live",
       "subzone": "數學",
       "tags": [
         "數學",
         "五下",
         "迷思概念"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "Google Sites 與 GitHub repo 皆確認（repo 含 4 個 html、4 個主題）。"
+      },
       "zone": "subjects"
     },
     {
@@ -284,11 +335,18 @@
       "related": [],
       "result": "",
       "status": "已上線（公開層需登入）",
+      "statusKey": "noted",
       "subzone": "社會",
       "tags": [
         "社會",
         "史地"
       ],
+      "verification": {
+        "level": "unverifiable-public",
+        "levelLabel": "公開層無法驗證",
+        "date": "2026-10-26",
+        "note": "公開層導向登入頁，內容未驗得；problem 與 result 照實留空，不編造。"
+      },
       "zone": "subjects"
     },
     {
@@ -312,12 +370,19 @@
       ],
       "result": "GitHub Pages 上線使用中，是『主站＋衛星』分工模式（獨立小工具獨立 repo、主站只加入口）的第一個試點。",
       "status": "已上線",
+      "statusKey": "live",
       "subzone": "藝文",
       "tags": [
         "藝文",
         "音樂",
         "PWA"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "GitHub Pages 線上版實際開啟確認，repo 亦存在。"
+      },
       "zone": "subjects"
     },
     {
@@ -341,6 +406,7 @@
       ],
       "result": "上線使用中，是給學生的主要遊戲入口。母站計 1 件，17 子頁只在卡片內以五小區列出，不逐頁計件。",
       "status": "已上線",
+      "statusKey": "live",
       "subzoneItems": {
         "學生作品": [
           "學生作品（學生以 Scratch 製作，站主轉成 web 分享給其他學生玩）"
@@ -376,6 +442,12 @@
         "無廣告",
         "電腦課獎勵"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "母站導覽實際查核共 17 個子頁；母站計 1 件，子頁不逐頁計件。"
+      },
       "zone": "games"
     },
     {
@@ -399,11 +471,18 @@
       ],
       "result": "GitHub Pages 已上線可玩；站主尚未把它放進 Google Sites 的學生入口，卡片照實標註這個分發狀態。",
       "status": "已上線（尚未放進 Google Site 學生入口）",
+      "statusKey": "noted",
       "subzone": "遊戲",
       "tags": [
         "3D 遊戲",
         "物理遊戲"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・分發待補",
+        "date": "2026-10-26",
+        "note": "GitHub Pages 已公開可玩；尚未放進 Google Sites 學生入口（缺分發，非缺部署）。"
+      },
       "zone": "games"
     },
     {
@@ -427,12 +506,19 @@
       ],
       "result": "GitHub Pages 上線使用中。方塊人偶的作法與 3D 校園裡的老師方塊公仔 NPC 是同一條技術線。",
       "status": "已上線",
+      "statusKey": "live",
       "tags": [
         "純前端",
         "隱私",
         "3D 列印",
         "拼豆"
       ],
+      "verification": {
+        "level": "verified-live",
+        "levelLabel": "已驗證・線上運作",
+        "date": "2026-10-26",
+        "note": "GitHub Pages 線上版與 repo 皆確認，純前端、照片不上傳。"
+      },
       "zone": "tools"
     },
     {
@@ -450,10 +536,17 @@
       "related": [],
       "result": "後來決定升級為連動 Notion「AI 專案點子清單」資料庫的唯讀儀表板：靜態前端 → GAS 代理（Notion token 藏 Script Properties）→ Notion API。patch 準備中、尚未交付，展示時不要寫成已完成。",
       "status": "v0.1.1，升級中（patch 準備中、尚未交付）",
+      "statusKey": "noted",
       "tags": [
         "自用工具",
         "專案管理"
       ],
+      "verification": {
+        "level": "repo-checked",
+        "levelLabel": "repo 已確認・升級未交付",
+        "date": "2026-10-26",
+        "note": "repo 確認為 v0.1.1；升級為 Notion 儀表板的 patch 準備中、尚未交付，不得寫成已完成。"
+      },
       "zone": "tools"
     },
     {
@@ -472,11 +565,18 @@
       "related": [],
       "result": "功能完成。其價值經站主驗證為「零成本＋資料自有＋學校網域可部署」的架構，而不是操作順暢度。",
       "status": "凍結成作品・覆盤待寫",
+      "statusKey": "frozen",
       "tags": [
         "GAS",
         "資料自有",
         "零成本"
       ],
+      "verification": {
+        "level": "repo-checked",
+        "levelLabel": "repo 已確認・凍結",
+        "date": "2026-10-26",
+        "note": "repo 唯讀確認；功能完成、站主主動凍結成作品，原因見 freezeReason。"
+      },
       "zone": "frozen"
     },
     {
@@ -495,56 +595,145 @@
       "related": [],
       "result": "Beta v0.1 完成（repo 55 個 commits），目標是讓第一章可以給學生試玩。",
       "status": "Beta 原型・目前凍結（未公開部署，不要給任何遊玩連結）",
+      "statusKey": "frozen",
       "tags": [
         "MMORPG",
         "教學原型",
         "教師管理面板"
       ],
+      "verification": {
+        "level": "repo-checked",
+        "levelLabel": "repo 已確認・凍結",
+        "date": "2026-10-26",
+        "note": "repo 確認（55 commits、Beta v0.1）；未公開部署，不提供遊玩連結。"
+      },
       "zone": "frozen"
     }
   ],
   "connections": [
     {
       "from": "xikou-3d-campus",
+      "id": "c1",
       "label": "延伸作品（用校園場景獨立製作）",
+      "status": "linked",
+      "statusLabel": "已串接",
       "style": "solid",
-      "to": "xikou-kart"
+      "to": "xikou-kart",
+      "type": "extension",
+      "typeLabel": "延伸作品"
     },
     {
       "from": "xikou-3d-campus",
+      "id": "c2",
       "label": "老師方塊公仔 NPC 的作法出自同一條技術線",
+      "status": "linked",
+      "statusLabel": "已串接",
       "style": "solid",
-      "to": "photo-blocks"
+      "to": "photo-blocks",
+      "type": "tech-lineage",
+      "typeLabel": "技術源流"
     },
     {
       "from": "xikou-3d-campus",
+      "id": "c3",
       "label": "主站＋衛星：獨立小工具獨立製作，主站只加入口",
+      "status": "linked",
+      "statusLabel": "已串接",
       "style": "solid",
-      "to": "recorder-helper"
+      "to": "recorder-helper",
+      "type": "hub-satellite",
+      "typeLabel": "主站＋衛星"
     },
     {
       "from": "english-1000-words",
+      "id": "c4",
       "label": "英文家族",
+      "status": "linked",
+      "statusLabel": "已串接",
       "style": "solid",
-      "to": "english-ww7"
+      "to": "english-ww7",
+      "type": "family",
+      "typeLabel": "同家族"
     },
     {
       "from": "english-ww7",
+      "id": "c5",
       "label": "英文家族",
+      "status": "linked",
+      "statusLabel": "已串接",
       "style": "solid",
-      "to": "english-ww8"
+      "to": "english-ww8",
+      "type": "family",
+      "typeLabel": "同家族"
     },
     {
       "from": "english-ww8",
+      "id": "c6",
       "label": "英文家族",
+      "status": "linked",
+      "statusLabel": "已串接",
       "style": "solid",
-      "to": "english-speaking-coach"
+      "to": "english-speaking-coach",
+      "type": "family",
+      "typeLabel": "同家族"
     },
     {
       "from": "sky-games",
+      "id": "c7",
       "label": "同為給學生的遊戲；憤怒貓尚未進阿喵入口",
+      "status": "not-linked",
+      "statusLabel": "尚未串接入口",
       "style": "dashed",
-      "to": "angry-cat"
+      "to": "angry-cat",
+      "type": "same-purpose",
+      "typeLabel": "同用途"
+    }
+  ],
+  "connectionTypes": [
+    {
+      "key": "extension",
+      "label": "延伸作品",
+      "meaning": "以原作品的場景或世界獨立製作的新作品。"
+    },
+    {
+      "key": "tech-lineage",
+      "label": "技術源流",
+      "meaning": "作法出自同一條技術線（例如方塊公仔的產生方式）。"
+    },
+    {
+      "key": "hub-satellite",
+      "label": "主站＋衛星",
+      "meaning": "獨立小工具獨立製作，主站只加入口連結，壞掉不影響主站。"
+    },
+    {
+      "key": "family",
+      "label": "同家族",
+      "meaning": "同一學習主題的系列作品，內容互相銜接。"
+    },
+    {
+      "key": "same-purpose",
+      "label": "同用途",
+      "meaning": "服務同一群使用者、同一種用途的作品。"
+    }
+  ],
+  "statusLegend": [
+    {
+      "key": "live",
+      "symbol": "✓",
+      "label": "已上線",
+      "meaning": "連結可開啟、內容已對照確認，可正常使用。"
+    },
+    {
+      "key": "noted",
+      "symbol": "◐",
+      "label": "已上線・附註記",
+      "meaning": "已上線，但有待驗收、尚未分發或公開層限制等註記，詳見該作品的驗證欄位。"
+    },
+    {
+      "key": "frozen",
+      "symbol": "❄",
+      "label": "凍結成作品",
+      "meaning": "站主主動凍結、不再開發，是投入產出比判斷，不是失敗或爛尾。"
     }
   ],
   "excluded": [
@@ -597,7 +786,8 @@
       "totalAfter": " 件",
       "solid": "實線：作品關聯",
       "dashed": "虛線：關聯但尚未串接入口",
-      "walkway": "步道（裝飾，不代表關聯）"
+      "walkway": "步道（裝飾，不代表關聯）",
+      "statusTitle": "狀態圖例"
     },
     "panel": {
       "title": "作品一覽",
@@ -629,7 +819,9 @@
       "zoneTitle": "{name}（{n} 件）",
       "subTitle": "{name}（{n}）",
       "locate": "在島上定位",
-      "locateLabel": "在島上定位：{name}"
+      "locateLabel": "在島上定位：{name}",
+      "legendTitle": "狀態圖例",
+      "relationsTitle": "作品關係"
     },
     "detail": {
       "close": "關閉詳情，回到全景",
@@ -645,11 +837,13 @@
       "zoneKicker": "目前選擇的分區",
       "zoneCount": "{n} 件",
       "seen": "看過",
-      "done": "已逛完"
+      "done": "已逛完",
+      "verification": "驗證：",
+      "verificationText": "{levelLabel}（{date}）— {note}"
     },
     "status": {
       "live": "上線中",
-      "pending": "狀態有註記",
+      "noted": "狀態有註記",
       "frozen": "凍結",
       "nodeLabel": "{num}. {name}（{kind}：{status}）"
     },
@@ -671,18 +865,6 @@
         "reset": "進度清除了，我們重新出發吧！"
       }
     }
-  },
-  "statusRules": {
-    "說明": "狀態判斷：frozenZones 裡的分區一律算「凍結」；作品 status 文字含有 pendingKeywords 任一詞就算「狀態有註記」；其餘算「上線中」。",
-    "frozenZones": [
-      "frozen"
-    ],
-    "pendingKeywords": [
-      "待",
-      "尚未",
-      "升級中",
-      "需登入"
-    ]
   },
   "displayRules": [
     {
@@ -774,6 +956,11 @@
       "id": "zone:frozen",
       "field": "note",
       "remove": "，呈現語氣保持中性"
+    },
+    {
+      "id": "english-speaking-coach",
+      "field": "verification.note",
+      "remove": "；此為正式版，舊 englishspeak 站不收錄"
     }
   ]
 }

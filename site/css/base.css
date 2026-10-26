@@ -33,7 +33,7 @@
   --z-frozen-top: #d9e3e9;   --z-frozen-side: #aebfca;   --z-frozen-ink: #56707f;
 
   --st-live-bg: #dcf0de; --st-live-ink: #22603a;
-  --st-pending-bg: #fbeac2; --st-pending-ink: #765006;
+  --st-noted-bg: #fbeac2; --st-noted-ink: #765006;
   --st-frozen-bg: #e2e8ec; --st-frozen-ink: #45585f;
 
   --radius: 18px;
@@ -74,7 +74,7 @@
     --z-frozen-top: #35424b;   --z-frozen-side: #25303a;   --z-frozen-ink: #a9bdc9;
 
     --st-live-bg: #1e3d29; --st-live-ink: #a6e0b4;
-    --st-pending-bg: #4a3a12; --st-pending-ink: #f4d58b;
+    --st-noted-bg: #4a3a12; --st-noted-ink: #f4d58b;
     --st-frozen-bg: #2c373d; --st-frozen-ink: #c3cfd5;
   }
 }
@@ -139,7 +139,7 @@ button { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 1px 10px; font-size: .84rem; line-height: 1.7;
 }
 .status.st-live, .prow-status.st-live { background: var(--st-live-bg); color: var(--st-live-ink); }
-.status.st-pending, .prow-status.st-pending { background: var(--st-pending-bg); color: var(--st-pending-ink); }
+.status.st-noted, .prow-status.st-noted { background: var(--st-noted-bg); color: var(--st-noted-ink); }
 .status.st-frozen, .prow-status.st-frozen { background: var(--st-frozen-bg); color: var(--st-frozen-ink); }
 .line-sample { display: inline-block; width: 26px; flex: none; border-top: 2.5px solid var(--link); vertical-align: middle; }
 .line-sample.bridge { height: 8px; border: 0; background: repeating-linear-gradient(90deg, var(--wood) 0 5px, var(--wood-dark) 5px 7px); border-radius: 1px; }

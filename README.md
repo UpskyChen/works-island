@@ -83,6 +83,8 @@
      "name": "新作品名稱",
      "zone": "tools",
      "status": "已上線",
+     "statusKey": "live",
+     "verification": { "level": "verified-live", "levelLabel": "已驗證・線上運作", "date": "2026-10-26", "note": "驗證說明" },
      "audience": "對象",
      "problem": "想解決什麼問題",
      "approach": "怎麼做的",
@@ -102,7 +104,9 @@
    | `name` | ✓ | 作品名稱 |
    | `zone` | ✓ | 分區：`campus`（校園）、`subjects`（教材）、`games`（遊戲）、`tools`（工具）、`frozen`（凍結） |
    | `subzone` | 教材區必填 | 學科，例如 `"國語"`。若放進原本的空子區（國語、自然），要先把該子區從那一區的 `emptySubzones` 拿掉 |
-   | `status` | ✓ | 狀態文字。含「待／尚未／升級中／需登入」會顯示「狀態有註記」，凍結區顯示「凍結」，其餘顯示「上線中」（規則在 `statusRules`） |
+   | `status` | ✓ | 卡片上的狀態標籤全文，照原文顯示 |
+   | `statusKey` | ✓ | 狀態符號：`live`（✓ 已上線）、`noted`（◐ 已上線・附註記）、`frozen`（❄ 凍結成作品）；可用的值定義在 `statusLegend` |
+   | `verification` | ✓ | 詳情卡的「驗證」列：`levelLabel`（驗證等級）、`date`、`note`（說明），照原文顯示；`level` 是英文代號 |
    | `links` | ✓ | 按鈕清單；沒有連結就寫 `[]` |
    | `problem`、`approach`、`result`、`audience` | | 問題／做法／成果／對象；不需要的整行刪掉 |
    | `tags` | | 標籤（也會被搜尋到） |
@@ -113,7 +117,10 @@
    - `meta` 裡的 `"totalWorks"`：總件數加 1。
    - `meta` 裡 `"countsByZone"` 該分區的數字加 1。
    - `zones` 裡該分區的 `"count"` 加 1。
-5. （選填）新作品和其他作品有關聯，就在 `"connections"` 加一筆：`{ "from": "舊作品 id", "label": "關聯說明", "style": "solid", "to": "my-new-work" }`（虛線用 `"dashed"`）。地圖只會畫這裡列出的線。
+5. （選填）新作品和其他作品有關聯，就在 `"connections"` 加一筆：
+   `{ "id": "c8", "from": "舊作品 id", "to": "my-new-work", "type": "family", "typeLabel": "同家族", "label": "關聯說明", "style": "solid", "status": "linked", "statusLabel": "已串接" }`
+   - `type` 要用 `connectionTypes` 裡有的種類；`status` 只能是 `linked` 或 `not-linked`（尚未串接入口，畫成虛線時 `style` 用 `"dashed"`）。
+   - 地圖只會畫這裡列出的線；清單模式最下方的「作品關係」也照這裡逐條列出。
 6. 照 **步驟 B** 存檔。島的形狀不用改：放不下時，網站會自動把那座島等比例放大。
 
 ## 檔案結構
@@ -166,7 +173,8 @@ python3 -m http.server 8000
 - `intro`：自我介紹（見上方教學）。
 - `ui`：網站上所有按鈕、標題、提示文字，例如 `"pano": "全景"`。可以直接改引號裡的字；`{n}`、`{name}` 這種大括號是程式自動填入的數字或名稱，請保留。少了任何一個，檢查程式會指出來。
 - `ui.guide.hints`：小貓嚮導的 8 句固定提示（見下方「小貓嚮導」）。
-- `statusRules`：狀態判斷規則。`frozenZones` 裡的分區顯示「凍結」；`status` 含有 `pendingKeywords` 任一詞顯示「狀態有註記」；其餘顯示「上線中」。
+- `statusLegend`：狀態圖例的 3 種狀態（符號、名稱、meaning）。島嶼模式的圖例、清單模式頂部的圖例、每件作品的符號都由它產生；右側面板篩選鈕的短名稱在 `ui.status`。
+- `connectionTypes`：連線的 5 種關係類型與說明。
 - `displayRules`：顯示規則（見下方說明）。
 
 ## 島嶼形狀（data/layout.json）
@@ -235,8 +243,8 @@ python3 -m http.server 8000
 原始資料檔裡有幾句話，是給製作者的施工指示（例如「不要猜子頁網址」「展示時不要寫成已完成」）或計件說明（例如「計 1 件」），另外還有「（站主本人 README 原意）」這類出處括號。依站主決定：
 
 - 作品資料一字不改，改由 `displayRules` 在**顯示時**刪掉這些片段。每條規則是 `{ "id": 作品 id（或 "zone:分區 id"）, "field": 欄位, "remove": 要刪掉的原文 }`。
-- 規則只做逐字刪除，不改寫、不新增任何字；共 18 條，都列在 `works.json` 最後，可逐條覆核（v2 時寫在 `display-rules.js`，內容一字未改，只是搬家）。
-- 其中一條規則刪掉口說練習 result 裡提到 `englishspeak` 舊站的那句，避免排除項目出現在站上。檢查程式也會確認 `excluded` 的名稱沒有出現在畫面文字裡。
+- 規則只做逐字刪除，不改寫、不新增任何字；共 19 條，都列在 `works.json` 最後，可逐條覆核（v2 時寫在 `display-rules.js`，內容一字未改，只是搬家）。
+- 其中兩條規則刪掉口說練習 result 與 `verification.note` 裡提到 `englishspeak` 舊站的那句，避免排除項目出現在站上（`field` 可以寫成 `verification.note` 這種巢狀欄位）。檢查程式也會確認 `excluded` 的名稱沒有出現在畫面文字裡。
 - 若之後修改資料檔，讓某條規則的原文對不上，該規則會自動失效，檢查程式與瀏覽器 console 都會提醒。
 - 新增作品時，直接寫成要給訪客看的文字即可，不需要新增規則。
 

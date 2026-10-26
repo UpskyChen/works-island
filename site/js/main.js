@@ -1,6 +1,6 @@
 // 組裝：讀資料 → 標題／關於我／圖例 → 地圖、面板、詳情卡、清單 → 路由、工具列、帶我逛逛、視差
 // 畫面上的文字全部來自 works.json（ui 段與作品資料），這裡不寫死任何文字或網址。
-import { el, on, reducedMotion, setStatusRules } from './util.js';
+import { el, on, reducedMotion, setStatusLegend } from './util.js';
 import { setText, applyText, t } from './text.js';
 import { createParallax } from './parallax.js';
 import { loadData } from './data-loader.js';
@@ -9,6 +9,7 @@ import { createMap } from './map.js';
 import { drawNodes, markNodes, pulseNode } from './nodes.js';
 import { drawLinks, markLinks, setLinksVisible } from './connections.js';
 import { createPanel, renderListView } from './panel.js';
+import { renderStatusLegend } from './detail.js';
 import { createDetail } from './detail.js';
 import { currentId, navigate, onRoute } from './router.js';
 import { createProgress } from './progress.js';
@@ -20,7 +21,7 @@ const TOUR_MS = 4500;
 async function start() {
   const [{ model, layoutConfig }, propsDoc] = await Promise.all([loadData(), loadProps()]);
   setText(model.ui);
-  setStatusRules(model.statusRules);
+  setStatusLegend(model.statusLegend);
   applyText();
   const app = { selected: null, lastId: null, mode: 'map', linksOn: true, dimmed: null, layoutKey: null, tour: null };
   const progress = createProgress(model);
@@ -385,6 +386,7 @@ function renderLegend(model) {
   if (styles.has('dashed')) lines.push(el('li', null, [el('span', { class: 'line-sample dashed', 'aria-hidden': 'true' }), t('legend.dashed')]));
   lines.push(el('li', null, [el('span', { class: 'line-sample bridge', 'aria-hidden': 'true' }), t('legend.walkway')]));
   box.appendChild(el('ul', { class: 'legend-lines' }, lines));
+  box.appendChild(renderStatusLegend(model, t('legend.statusTitle')));
 }
 
 start().catch((err) => {
