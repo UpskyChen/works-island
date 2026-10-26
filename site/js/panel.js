@@ -1,6 +1,6 @@
 // 右側面板（搜尋、狀態篩選、分區／連線分頁）與清單模式
-import { el, statusKind, STATUS_KINDS, statusIcon } from './util.js';
-import { renderCard } from './detail.js';
+import { el, statusKind, statusKinds, statusIcon } from './util.js';
+import { renderCard, renderStatusLegend } from './detail.js';
 import { t } from './text.js';
 
 export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, progress, onReset }) {
@@ -8,7 +8,7 @@ export function createPanel(root, model, { onSelect, onFilter, onLinkSelect, pro
   let filter = 'all';
   let tab = 'zones';
   let selected = null;
-  const FILTERS = [['all', t('panel.filterAll')], ...STATUS_KINDS.map((k) => [k, t('status.' + k)])];
+  const FILTERS = [['all', t('panel.filterAll')], ...statusKinds().map((k) => [k, t('status.' + k)])];
 
   const countOf = (k) => (k === 'all' ? model.works.length : model.works.filter((w) => statusKind(w) === k).length);
 
@@ -172,7 +172,29 @@ export function renderListView(box, model, { onLocate }) {
     return sec;
   });
   box.appendChild(el('h2', { class: 'list-title' }, [t('list.titleBefore'), el('strong', { id: 'total-list', text: String(count) }), t('list.titleAfter')]));
+  box.appendChild(renderStatusLegend(model, t('list.legendTitle')));
   sections.forEach((s) => box.appendChild(s));
+  box.appendChild(renderRelations());
+
+  // 作品關係：資料檔 connections 逐條列出「起點 → 終點｜類型｜說明｜狀態」，作品名可點去島上定位
+  function renderRelations() {
+    const end = (w) => el('button', { type: 'button', class: 'link-btn', onclick: () => onLocate(w.id), 'aria-label': t('list.locateLabel', { name: w.name }) }, w.name);
+    return el('section', { class: 'list-relations' }, [
+      el('h3', { text: t('list.relationsTitle') }),
+      el('ul', { class: 'rel-rows' }, model.connections.map((c) => {
+        const a = model.byId[c.from];
+        const b = model.byId[c.to];
+        return el('li', { class: 'rel-row ' + c.style + ' rs-' + c.status, 'data-conn': c.id }, [
+          el('span', { class: 'rel-ends' }, [end(a), el('span', { class: 'rel-arrow', 'aria-hidden': 'true', text: '→' }), end(b)]),
+          el('span', { class: 'rel-meta' }, [
+            el('span', { class: 'rel-type', text: c.typeLabel }),
+            el('span', { class: 'rel-label', text: c.label }),
+            el('span', { class: 'rel-status', text: c.statusLabel })
+          ])
+        ]);
+      }))
+    ]);
+  }
 
   function listRows(works) {
     return el('ul', { class: 'rows' }, works.map((w) => {

@@ -1,5 +1,5 @@
 // 詳情卡：問題 → 做法 → 成果＋狀態標籤＋說明／凍結原因＋連結（內容全部來自資料檔）
-import { el, statusKind, statusIcon } from './util.js';
+import { el, statusKind, statusIcon, statusEntry, statusKinds } from './util.js';
 import { t } from './text.js';
 
 export function renderCard(w, model, { inList = false, onRelated } = {}) {
@@ -20,6 +20,8 @@ export function renderCard(w, model, { inList = false, onRelated } = {}) {
   const badges = el('p', { class: 'badges' }, el('span', { class: 'status st-' + kind }, [statusIcon(kind), w.status]));
   if (w.relationLabel) badges.appendChild(el('span', { class: 'rel-badge', text: w.relationLabel }));
   card.appendChild(badges);
+  const v = w.verification;
+  if (v) card.appendChild(el('p', { class: 'verify' }, [el('strong', { text: t('detail.verification') }), t('detail.verificationText', v)]));
 
   const steps = [[t('detail.problem'), w.problem], [t('detail.approach'), w.approach], [t('detail.result'), w.result]].filter((s) => s[1]);
   if (steps.length) {
@@ -159,4 +161,18 @@ export function createDetail(root, model, { onClose, onRelated, onPick, progress
     current: () => cur,
     root
   };
+}
+
+// 狀態圖例：符號＋名稱＋meaning，全部來自 works.json 的 statusLegend（島嶼與清單兩模式共用）
+export function renderStatusLegend(model, title) {
+  return el('div', { class: 'status-legend' }, [
+    el('p', { class: 'sl-title', text: title }),
+    el('ul', null, statusKinds().map((k) => {
+      const e = statusEntry(k);
+      return el('li', { class: 'st-' + k }, [
+        el('span', { class: 'status st-' + k }, [statusIcon(k), e.label]),
+        el('span', { class: 'sl-meaning', text: e.meaning })
+      ]);
+    }))
+  ]);
 }

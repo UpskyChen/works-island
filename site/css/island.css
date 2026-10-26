@@ -140,7 +140,7 @@
 .node .cap-num { fill: var(--on-ink); font-size: 12px; font-weight: 800; text-anchor: middle; pointer-events: none; }
 .node .cap-name { fill: var(--text); font-size: 14px; font-weight: 700; pointer-events: none; }
 .node.st-live .cap-status { color: var(--st-live-ink); }
-.node.st-pending .cap-status { color: var(--st-pending-ink); }
+.node.st-noted .cap-status { color: var(--st-noted-ink); }
 .node.st-frozen .cap-status { color: var(--st-frozen-ink); }
 .node .cap-ring { fill: none; stroke: var(--accent); stroke-width: 3; opacity: 0; }
 .node .cap-hit { fill: transparent; }

@@ -78,28 +78,30 @@ export function wrapChars(text, perLine) {
   return lines;
 }
 
-// 狀態分類：顏色之外一律附圖示與文字（文字在 works.json 的 ui.status）
-export const STATUS_KINDS = ['live', 'pending', 'frozen'];
+// 狀態分類：每件作品的 statusKey 對照 works.json 的 statusLegend（符號、名稱、meaning 都在資料檔）。
+// 顏色之外一律附圖示與文字；篩選鈕等短名稱在 works.json 的 ui.status
+let legend = [];
+export function setStatusLegend(list) { legend = Array.isArray(list) ? list : []; }
+export const statusKinds = () => legend.map((s) => s.key);
+export const statusEntry = (kind) => legend.find((s) => s.key === kind) || null;
+export function statusKind(w) {
+  return statusEntry(w.statusKey) ? w.statusKey : (console.warn('[狀態] statusKey 不在 statusLegend 裡：', w.id, w.statusKey), 'unknown');
+}
 
-// 狀態圖示（16×16）：✓ 上線、半滿圓 有註記、雪花 凍結。用 SVG 畫，不依賴字型
+// 符號畫法（16×16）：用 SVG 畫，不依賴字型。資料檔換了沒畫過的符號時，直接顯示該字元
 const ICON_PATHS = {
-  live: [['path', { d: 'M3 8.5 L6.5 12 L13 4.5', class: 'si-stroke' }]],
-  pending: [['circle', { cx: 8, cy: 8, r: 5.6, class: 'si-stroke' }], ['path', { d: 'M8 2.4 A5.6 5.6 0 0 1 8 13.6 Z', class: 'si-fill' }]],
-  frozen: [['path', { d: 'M8 1.8 V14.2 M2.6 4.9 L13.4 11.1 M2.6 11.1 L13.4 4.9 M6.2 2.8 L8 4.4 L9.8 2.8 M6.2 13.2 L8 11.6 L9.8 13.2', class: 'si-stroke' }]]
+  '✓': [['path', { d: 'M3 8.5 L6.5 12 L13 4.5', class: 'si-stroke' }]],
+  '◐': [['circle', { cx: 8, cy: 8, r: 5.6, class: 'si-stroke' }], ['path', { d: 'M8 2.4 A5.6 5.6 0 0 1 8 13.6 Z', class: 'si-fill' }]],
+  '❄': [['path', { d: 'M8 1.8 V14.2 M2.6 4.9 L13.4 11.1 M2.6 11.1 L13.4 4.9 M6.2 2.8 L8 4.4 L9.8 2.8 M6.2 13.2 L8 11.6 L9.8 13.2', class: 'si-stroke' }]]
 };
+function iconParts(kind) {
+  const e = statusEntry(kind);
+  const sym = e ? e.symbol : '?';
+  return ICON_PATHS[sym] ? ICON_PATHS[sym].map(([tag, a]) => svg(tag, a)) : [svg('text', { class: 'si-char', x: 8, y: 8, dy: '0.35em', 'text-anchor': 'middle', text: sym })];
+}
 export function statusIcon(kind, attrs = {}) {
-  return svg('svg', Object.assign({ class: 'st-svg', viewBox: '0 0 16 16', 'aria-hidden': 'true', focusable: 'false' }, attrs),
-    ICON_PATHS[kind].map(([tag, a]) => svg(tag, a)));
+  return svg('svg', Object.assign({ class: 'st-svg', viewBox: '0 0 16 16', 'aria-hidden': 'true', focusable: 'false' }, attrs), iconParts(kind));
 }
 export function statusIconGroup(kind, x, y, size) {
-  return svg('g', { class: 'cap-status', transform: `translate(${x - size / 2} ${y - size / 2}) scale(${size / 16})`, 'aria-hidden': 'true' },
-    ICON_PATHS[kind].map(([tag, a]) => svg(tag, a)));
-}
-// 判斷規則在 works.json 的 statusRules：哪些分區算凍結、狀態文字含哪些字算「有註記」
-let statusRules = { frozenZones: [], pendingKeywords: [] };
-export function setStatusRules(r) { statusRules = Object.assign({ frozenZones: [], pendingKeywords: [] }, r || {}); }
-export function statusKind(w) {
-  if (statusRules.frozenZones.includes(w.zone)) return 'frozen';
-  if (statusRules.pendingKeywords.some((k) => (w.status || '').includes(k))) return 'pending';
-  return 'live';
+  return svg('g', { class: 'cap-status', transform: `translate(${x - size / 2} ${y - size / 2}) scale(${size / 16})`, 'aria-hidden': 'true' }, iconParts(kind));
 }

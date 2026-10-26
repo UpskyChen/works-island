@@ -15,12 +15,15 @@ function applyDisplayRules(data) {
   data.works.forEach((w) => { targets[w.id] = w; });
   data.zones.forEach((z) => { targets['zone:' + z.id] = z; });
   (data.displayRules || []).forEach((rule) => {
-    const t = targets[rule.id];
-    if (!t || typeof t[rule.field] !== 'string' || !t[rule.field].includes(rule.remove)) {
+    // field 可以是 "verification.note" 這種巢狀欄位
+    const path = rule.field.split('.');
+    const key = path.pop();
+    const t = path.reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), targets[rule.id]);
+    if (!t || typeof t[key] !== 'string' || !t[key].includes(rule.remove)) {
       console.warn('[display-rules] 找不到原文，規則未套用：', rule);
       return;
     }
-    t[rule.field] = t[rule.field].split(rule.remove).join('');
+    t[key] = t[key].split(rule.remove).join('');
   });
 }
 
@@ -48,7 +51,7 @@ export function prepare(raw) {
 
   return {
     meta: data.meta, intro: data.intro, zones: data.zones, zoneById,
-    ui: data.ui || {}, statusRules: data.statusRules,
+    ui: data.ui || {}, statusLegend: data.statusLegend || [], connectionTypes: data.connectionTypes || [],
     works, byId, connections, worksInZone
   };
 }

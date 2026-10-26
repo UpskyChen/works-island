@@ -219,10 +219,6 @@ def ui_keys_used():
             m = re.search(r"HINTS = Object\.fromEntries\(\[([^\]]*)\]", text)
             if m:
                 keys.update('guide.hints.' + k for k in re.findall(r"'(\w+)'", m.group(1)))
-            if 'STATUS_KINDS' in text and f == 'util.js':
-                m = re.search(r"STATUS_KINDS = \[([^\]]*)\]", text)
-                if m:
-                    keys.update('status.' + k for k in re.findall(r"'(\w+)'", m.group(1)))
     return {k for k in keys if not k.endswith('.')}
 
 
@@ -248,7 +244,8 @@ def check_works(d):
     conns = need(P, d, 'connections', list, '最外層')
     excluded = opt(P, d, 'excluded', list, '最外層') or []
     ui = need(P, d, 'ui', dict, '最外層')
-    rules = opt(P, d, 'statusRules', dict, '最外層')
+    legend = need(P, d, 'statusLegend', list, '最外層') or []
+    ctypes = need(P, d, 'connectionTypes', list, '最外層') or []
     drules = opt(P, d, 'displayRules', list, '最外層') or []
 
     if meta is not None:
@@ -278,6 +275,21 @@ def check_works(d):
                 if isinstance(e, dict) and isinstance(e.get('name'), str):
                     empty_subs.setdefault(zid, {})[e['name']] = ln(e)
 
+    legend_keys = []
+    for i, s_ in enumerate(legend):
+        where = f'statusLegend 第 {i + 1} 項'
+        for k in ('key', 'symbol', 'label', 'meaning'):
+            need(P, s_, k, str, where)
+        if isinstance(s_, dict) and isinstance(s_.get('key'), str):
+            legend_keys.append(s_['key'])
+    type_keys = []
+    for i, ct in enumerate(ctypes):
+        where = f'connectionTypes 第 {i + 1} 項'
+        for k in ('key', 'label', 'meaning'):
+            need(P, ct, k, str, where)
+        if isinstance(ct, dict) and isinstance(ct.get('key'), str):
+            type_keys.append(ct['key'])
+
     ids = {}
     for i, w in enumerate(works or []):
         label = w.get('name') if isinstance(w, dict) and isinstance(w.get('name'), str) else ''
@@ -287,6 +299,13 @@ def check_works(d):
         zone = need(P, w, 'zone', str, where)
         status = need(P, w, 'status', str, where)
         links = need(P, w, 'links', list, where)
+        skey = need(P, w, 'statusKey', str, where)
+        if skey and skey not in legend_keys:
+            report('error', P, ln(w, 'statusKey'), f'{where} 的 statusKey "{skey}" 不在 statusLegend 裡；可用的：{"、".join(legend_keys)}')
+        ver = need(P, w, 'verification', dict, where)
+        if ver is not None:
+            for k in ('level', 'levelLabel', 'date', 'note'):
+                need(P, ver, k, str, where + ' 的 verification')
         for k in ('problem', 'approach', 'result', 'audience', 'displayNote', 'freezeReason', 'subzone', 'relationLabel', 'subzoneNote'):
             opt(P, w, k, str, where)
         for k in ('tags', 'related'):
@@ -328,6 +347,14 @@ def check_works(d):
         b = need(P, c, 'to', str, where)
         need(P, c, 'label', str, where)
         style = opt(P, c, 'style', str, where)
+        for k in ('id', 'typeLabel', 'statusLabel'):
+            need(P, c, k, str, where)
+        ctype = need(P, c, 'type', str, where)
+        if ctype and ctype not in type_keys:
+            report('error', P, ln(c, 'type'), f'{where} 的 type "{ctype}" 不在 connectionTypes 裡')
+        cstat = need(P, c, 'status', str, where)
+        if cstat and cstat not in ('linked', 'not-linked'):
+            report('error', P, ln(c, 'status'), f'{where} 的 status 只能是 "linked" 或 "not-linked"')
         for end, v in (('from', a), ('to', b)):
             if v and v not in ids:
                 report('error', P, ln(c, end), f'{where} 的 "{end}" 指到不存在的作品 id "{v}"')
@@ -356,18 +383,22 @@ def check_works(d):
     for z in zones or []:
         if isinstance(z, dict) and isinstance(z.get('id'), str):
             targets['zone:' + z['id']] = z
-    shown = {k: dict(v) for k, v in targets.items()}
+    shown = {k: json.loads(json.dumps(v)) for k, v in targets.items()}
     for i, r in enumerate(drules):
         where = f'displayRules 第 {i + 1} 條'
         rid = need(P, r, 'id', str, where)
         field = need(P, r, 'field', str, where)
         rem = need(P, r, 'remove', str, where)
         if rid and field and rem:
+            # field 可以是 "verification.note" 這種巢狀欄位
+            *path, key = field.split('.')
             t = shown.get(rid)
-            if not t or not isinstance(t.get(field), str) or rem not in t[field]:
+            for k in path:
+                t = t.get(k) if isinstance(t, dict) else None
+            if not isinstance(t, dict) or not isinstance(t.get(key), str) or rem not in t[key]:
                 report('warning', P, ln(r), f'{where} 找不到要刪除的原文（資料可能改過了），這條規則不會生效')
             else:
-                t[field] = t[field].replace(rem, '')
+                t[key] = t[key].replace(rem, '')
 
     # excluded 的項目不得出現在畫面上（套用顯示規則之後）
     def strings(v):
@@ -389,13 +420,11 @@ def check_works(d):
                 where = f'作品「{orig.get("name", name)}」' if isinstance(orig, dict) and name in ids else name
                 report('error', P, ln(orig), f'不公開的項目「{e["name"]}」出現在{where}的文字裡（本站規則：excluded 不得出現在網站上）')
 
-    # 狀態規則
-    if rules is not None:
-        for k in ('frozenZones', 'pendingKeywords'):
-            v = need(P, rules, k, list, 'statusRules')
-            for x in v or []:
-                if not isinstance(x, str):
-                    report('error', P, ln(rules, k), f'statusRules 的 "{k}" 裡每一項都要是文字')
+    # 篩選鈕的短名稱：statusLegend 每一種狀態都要在 ui.status 有對應文字
+    if isinstance(ui, dict):
+        for k in legend_keys:
+            if not isinstance((ui.get('status') or {}).get(k), str):
+                report('error', P, ln(d, 'ui'), f'畫面文字 ui.status.{k} 不見了（statusLegend 有這種狀態），請補回來')
 
     # 程式用到的畫面文字都要在 ui 裡
     if ui is not None:
