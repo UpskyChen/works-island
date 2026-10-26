@@ -1,0 +1,223 @@
+/* 地圖舞台、六角地塊、節點膠囊、連線、環境與開場動畫 */
+.stage-wrap { position: relative; overflow-x: clip; --stage-h: clamp(560px, calc(100svh - 40px), 880px); }
+.stage {
+  position: relative; height: var(--stage-h); border-radius: 26px; overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 40%, var(--sea) 55%, var(--sea-deep) 100%);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.map { position: absolute; inset: 0; }
+.island-map {
+  display: block; width: 100%; height: 100%; font-family: var(--font);
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  will-change: transform; cursor: grab;
+}
+.island-map:active { cursor: grabbing; }
+
+/* ---------- 環境動態（在地圖下層的獨立圖層，只動 transform，不會蓋住節點與文字） ---------- */
+.sea-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.waves {
+  position: absolute; inset: -20px -160px -20px -160px;
+  background-color: var(--wave);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='56'%3E%3Cpath d='M0 14 q20 -9 40 0 t40 0 t40 0 t40 0 M-20 42 q20 -9 40 0 t40 0 t40 0 t40 0 t40 0' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='56'%3E%3Cpath d='M0 14 q20 -9 40 0 t40 0 t40 0 t40 0 M-20 42 q20 -9 40 0 t40 0 t40 0 t40 0 t40 0' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: 160px 56px; mask-size: 160px 56px;
+  animation: waves 14s linear infinite;
+}
+@keyframes waves { to { transform: translate3d(160px, 0, 0); } }
+.cloud {
+  position: absolute; width: 340px; height: 150px; border-radius: 50%;
+  background: radial-gradient(closest-side, var(--cloud), transparent);
+  left: 0; top: 0; animation: cloud 80s linear infinite; will-change: transform;
+}
+.cloud.c1 { top: 12%; }
+.cloud.c2 { top: 58%; width: 260px; height: 120px; animation-duration: 110s; animation-delay: -55s; }
+@keyframes cloud { from { transform: translate3d(-380px, 0, 0); } to { transform: translate3d(calc(100vw + 40px), 0, 0); } }
+.boat { position: absolute; width: 34px; height: 34px; left: 0; will-change: transform; }
+.boat .hull { fill: #8a5a3c; }
+.boat .mast { stroke: #5b3d29; stroke-width: 1.6; }
+.boat .sail { fill: #fffaf0; }
+.boat .sail2 { fill: #f2c3a7; }
+.boat.b1 { top: 5%; animation: sail 95s linear infinite alternate; }
+.boat.b2 { bottom: 14%; width: 26px; height: 26px; animation: sail 130s linear infinite alternate-reverse; }
+@keyframes sail { from { transform: translate3d(2vw, 0, 0); } to { transform: translate3d(min(92vw, 1240px), 6px, 0); } }
+.cam-moving .sea-fx *, .cam-moving .island-map * { animation-play-state: paused !important; }
+
+/* ---------- 六角地塊 ---------- */
+.island .shore { fill: var(--beach); stroke: var(--beach); stroke-linejoin: round; }
+.island .side { fill: var(--side); }
+.island .top { fill: var(--top); stroke: var(--side); stroke-width: .8; stroke-opacity: .55; }
+.island .cell-tint { fill: #fff; fill-opacity: .28; }
+.island .cell-lot { fill: var(--beach); fill-opacity: .9; stroke: var(--side); stroke-width: .8; stroke-dasharray: 3 3; }
+.island .cell-frame { fill: none; stroke: var(--ink); stroke-opacity: .28; stroke-width: 1.2; }
+.island .cell-frame.empty { stroke-dasharray: 5 5; }
+.zone-frozen.island .top { stroke: #fff; stroke-opacity: .6; stroke-dasharray: 2 3; }
+@media (prefers-color-scheme: dark) {
+  .island .cell-tint { fill: #000; fill-opacity: .18; }
+  .zone-frozen.island .top { stroke: #9fb6c4; stroke-opacity: .4; }
+}
+
+/* 分區標籤、子區名稱、告示牌 */
+.zone-label .zl-body { fill: var(--surface); stroke: var(--ink); stroke-opacity: .35; }
+.zone-label .zl-badge { fill: var(--ink); }
+.zone-label .zl-count { fill: var(--on-ink); font-weight: 800; text-anchor: middle; }
+.zone-label .zl-name { fill: var(--text); font-weight: 800; }
+.cell-name { fill: var(--text); font-weight: 800; paint-order: stroke; stroke: var(--surface); stroke-width: 3.5px; stroke-linejoin: round; }
+.cell-count { fill: var(--muted); font-weight: 600; }
+.sign-board { fill: #f9f1de; stroke: #8a6a45; stroke-width: 1.5; }
+.sign-post { fill: #8a6a45; }
+.sign-text { fill: #4d3a24; text-anchor: middle; }
+@media (prefers-color-scheme: dark) {
+  .sign-board { fill: #3b3326; stroke: #b0916a; }
+  .sign-post { fill: #b0916a; }
+  .sign-text { fill: #f0e3c8; }
+}
+
+/* 原創小插畫的顏色 */
+.prop .pr-line { stroke: #4f4338; stroke-width: 1.4; stroke-linejoin: round; }
+.prop .pr-a { fill: #fff6e3; }
+.prop .pr-b { fill: var(--ink); }
+.prop .pr-c { fill: var(--side); }
+.prop .pr-w { fill: #ffffff; }
+.prop .pr-ink { fill: #4f4338; }
+.prop .pr-ink-line { fill: none; stroke: #4f4338; stroke-width: 1.8; stroke-linecap: round; }
+.prop .pr-w-line { fill: none; stroke: #fff; stroke-width: 1.6; stroke-dasharray: 3 2; }
+.prop .pr-thin { fill: none; stroke: #8b7c6c; stroke-width: 1.1; stroke-linecap: round; }
+.prop .pr-chalk { fill: none; stroke: #f4f1e8; stroke-width: 1.6; stroke-linecap: round; }
+.prop .pr-ice { fill: none; stroke: #6aa6c4; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.prop .pr-letters { fill: var(--ink); font-size: 9px; font-weight: 900; font-family: var(--font); }
+@media (prefers-color-scheme: dark) {
+  .prop .pr-line { stroke: #1a1410; }
+  .prop .pr-a { fill: #e9dcc3; }
+  .prop .pr-w { fill: #efe9df; }
+  .prop .pr-ice { stroke: #a8d4ea; }
+}
+.prop .gear-spin, .prop .flag-cloth { transform-box: fill-box; transform-origin: center; }
+.prop .gear-spin { animation: spin 16s linear infinite; }
+.prop .flag-cloth { transform-origin: left center; animation: flag 2.4s ease-in-out infinite alternate; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes flag { from { transform: skewY(-4deg) scaleX(.94); } to { transform: skewY(3deg) scaleX(1); } }
+
+/* ---------- 連線 ---------- */
+.link path { fill: none; stroke-linecap: round; }
+.link .link-base { stroke: var(--link); stroke-width: 3; opacity: .85; transition: opacity .25s; }
+.link.dashed .link-base { stroke-dasharray: 8 7; }
+.link .link-flow { stroke: var(--accent); stroke-width: 3.6; opacity: 0; stroke-dasharray: 7 9; }
+.links.has-active .link .link-base { opacity: .18; }
+.links.has-active .link.is-active .link-base { opacity: .35; }
+.link.is-active .link-flow { opacity: 1; animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -32; } }
+.links.is-hidden { display: none; }
+
+/* ---------- 節點膠囊 ---------- */
+.node { cursor: pointer; outline: none; }
+.node .cap, .node .cap-shadow { transform-box: fill-box; transform-origin: center; transition: transform .18s ease, opacity .18s ease; }
+.node .cap-shadow { fill: #1d2b30; opacity: .16; }
+.node .cap-body { fill: var(--surface); stroke: var(--ink); stroke-opacity: .55; stroke-width: 1.4; }
+.node .cap-badge { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
+.node .cap-num { fill: var(--on-ink); font-size: 12px; font-weight: 800; text-anchor: middle; pointer-events: none; }
+.node .cap-name { fill: var(--text); font-size: 14px; font-weight: 700; pointer-events: none; }
+.node.st-live .cap-status { color: var(--st-live-ink); }
+.node.st-pending .cap-status { color: var(--st-pending-ink); }
+.node.st-frozen .cap-status { color: var(--st-frozen-ink); }
+.node .cap-ring { fill: none; stroke: var(--accent); stroke-width: 3; opacity: 0; }
+.node .cap-hit { fill: transparent; }
+.node .cap-rel { font-size: 12px; font-weight: 700; fill: var(--ink); text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 3.5px; stroke-linejoin: round; }
+.nodes-numbers .node .cap-num { font-size: 14px; }
+.nodes-numbers .node .cap-rel { font-size: 10px; }
+.node.zone-frozen .cap-body { fill: var(--surface-2); }
+
+.node:hover .cap, .node:focus-visible .cap { transform: translateY(-3px) scale(1.06); }
+.node:hover .cap-shadow, .node:focus-visible .cap-shadow { transform: scale(1.12); opacity: .3; }
+.node:active .cap { transform: scale(.95); transition-duration: .08s; }
+.node:focus-visible .cap-ring { opacity: .7; }
+.node.is-selected .cap-ring { opacity: 1; }
+.node.is-selected .cap-body { stroke: var(--accent); stroke-width: 2.2; stroke-opacity: 1; }
+.node.is-dim { opacity: .22; }
+.node.pulse .cap-ring { animation: ring 1s ease-out 2; }
+@keyframes ring { 0% { opacity: 1; stroke-width: 3; } 100% { opacity: 0; stroke-width: 14; } }
+
+/* ---------- 開場：地塊依序浮出水面 ---------- */
+.intro .island { animation: rise .7s cubic-bezier(.2, .9, .3, 1.15) both; }
+.intro .titles { animation: fade .5s .75s both; }
+.intro .links { animation: fade .5s .9s both; }
+.intro .nodes { animation: fade .5s .85s both; }
+@keyframes rise { from { transform: translateY(46px); opacity: 0; } 60% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* 手機：地圖高一點、留空間給下方的面板 */
+@media (max-width: 699px) {
+  .stage-wrap { --stage-h: clamp(440px, 72svh, 640px); }
+  .stage { border-radius: 20px; }
+  .boat.b1 { top: 3%; }
+}
+
+/* 減少動態效果：所有動畫停止，功能不變 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- v2 補充：玩具世界質感 ---------- */
+.island-shadow { fill: #04394a; opacity: .22; }
+.island .foam { fill: none; stroke: var(--foam); stroke-linejoin: round; }
+@media (prefers-color-scheme: dark) { .island-shadow { fill: #000; opacity: .35; } }
+
+/* 木橋：中性木色的裝飾步道（作品連線是彩色線，兩者不同） */
+.bridge path { fill: none; stroke-linecap: butt; }
+.bridge-shadow { stroke: #04394a; opacity: .18; }
+.bridge-deck { stroke: var(--wood); }
+.bridge-planks { stroke: var(--wood-dark); }
+
+/* 景物與地標的顏色 */
+.prop .sc-shadow { fill: #1d3a2a; opacity: .18; }
+.prop .sc-trunk { fill: #8a5e3b; }
+.prop .sc-leaf { fill: #7cc36a; }
+.prop .sc-leaf2 { fill: #4f9a4a; }
+.prop .sc-light { fill: #fff; opacity: .55; }
+.prop .sc-snow { fill: #ffffff; }
+.prop .sc-stem { fill: none; stroke: #4f9a4a; stroke-width: 1.6; stroke-linecap: round; }
+.prop .sc-flower-a { fill: #f28fa0; }
+.prop .sc-flower-b { fill: #f6c84c; }
+.prop .sc-metal { fill: #55606a; }
+.prop .sc-metal-line { fill: none; stroke: #55606a; stroke-width: 1.6; stroke-linecap: round; }
+.prop .sc-glow { fill: #ffe39a; }
+.prop .sc-wood { fill: #c48d58; }
+.prop .sc-wood2 { fill: #9c6a3d; }
+.prop .sc-stone { fill: #c7ccd0; }
+.prop .sc-stone2 { fill: #9aa3aa; }
+.prop .lm-wall { fill: #fff8ea; }
+.prop .lm-wall2 { fill: #e6d8bf; }
+.prop .lm-roof { fill: var(--ink); }
+.prop .lm-roof2 { fill: var(--side); }
+.prop .lm-win { fill: #8fd0e6; }
+.prop .lm-door { fill: #8a5e3b; }
+.prop .lm-flag { fill: #e86a4f; }
+.prop .lm-book { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; }
+.prop .lm-stripe { fill: #fff8ea; }
+.prop .lm-ice { fill: #f4fbff; stroke: #9cc3d6; stroke-width: 1; }
+.prop .lm-ice-line { fill: none; stroke: #b7d5e4; stroke-width: 1; }
+.prop .lm-tarp { fill: var(--side); }
+@media (prefers-color-scheme: dark) {
+  .prop .sc-leaf { fill: #5ea956; }
+  .prop .sc-leaf2 { fill: #3d7a3b; }
+  .prop .lm-wall { fill: #d9cdb7; }
+  .prop .lm-wall2 { fill: #b5a68c; }
+  .prop .lm-ice { fill: #cfe2ec; }
+}
+
+/* 插圖資產槽：圖片載入成功後隱藏該區的 SVG 地塊與景物（標籤、節點、連線仍在上層） */
+.zone-art { pointer-events: none; }
+.island.has-art .foam, .island.has-art .shore, .island.has-art .side, .island.has-art .top,
+.island.has-art .cell-tint, .island.has-art .cell-lot, .island.has-art .prop, .island.has-art .scenery { display: none; }
+
+/* 已逛完章 */
+.stamp { pointer-events: none; animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+.stamp-ring { fill: color-mix(in srgb, var(--surface) 80%, transparent); stroke: #d0533a; stroke-width: 2.2; }
+.stamp-ring2 { fill: none; stroke: #d0533a; stroke-width: 1; stroke-dasharray: 2 2; }
+.stamp-text { fill: #d0533a; font-size: 11px; font-weight: 900; text-anchor: middle; letter-spacing: .02em; }
+.stamp-check { fill: none; stroke: #d0533a; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes stamp { from { transform: scale(1.8); opacity: 0; } to { opacity: 1; } }
+.stamp { transform-box: fill-box; transform-origin: center; }
+@media (prefers-color-scheme: dark) {
+  .stamp-ring, .stamp-ring2, .stamp-check { stroke: #ff9a80; }
+  .stamp-text { fill: #ff9a80; }
+}

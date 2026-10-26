@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <!-- 作品島原創小插畫。每個 <g id="p-…"> 都畫在 40×40 的方格內，顏色由 css/island.css 的 .pr-* 類別決定。 -->
+
+  <!-- 校舍 -->
+  <g id="p-school">
+    <rect class="pr-a pr-line" x="5" y="17" width="30" height="18" rx="1.5"/>
+    <path class="pr-b pr-line" d="M3 18 L20 6 L37 18 Z"/>
+    <rect class="pr-w pr-line" x="9" y="21" width="5" height="5"/>
+    <rect class="pr-w pr-line" x="26" y="21" width="5" height="5"/>
+    <rect class="pr-c pr-line" x="17" y="25" width="6" height="10"/>
+    <circle class="pr-w pr-line" cx="20" cy="14" r="2.6"/>
+  </g>
+
+  <!-- 旗桿 -->
+  <g id="p-flag">
+    <rect class="pr-ink" x="12" y="5" width="2" height="31" rx="1"/>
+    <path class="pr-b pr-line flag-cloth" d="M14 6 Q22 3 30 7 Q26 11 30 15 Q22 12 14 15 Z"/>
+    <ellipse class="pr-c" cx="13" cy="36" rx="7" ry="2"/>
+  </g>
+
+  <!-- 跑道一角 -->
+  <g id="p-track">
+    <path class="pr-b" d="M4 34 A16 16 0 0 1 36 34 L30 34 A10 10 0 0 0 10 34 Z"/>
+    <path class="pr-w-line" d="M7 34 A13 13 0 0 1 33 34"/>
+    <path class="pr-a" d="M10 34 A10 10 0 0 1 30 34 Z"/>
+  </g>
+
+  <!-- 書本 -->
+  <g id="p-book">
+    <path class="pr-w pr-line" d="M5 11 Q12 8 20 12 L20 33 Q12 29 5 32 Z"/>
+    <path class="pr-w pr-line" d="M35 11 Q28 8 20 12 L20 33 Q28 29 35 32 Z"/>
+    <path class="pr-thin" d="M8 16 Q12 14.5 17 16.5 M8 20 Q12 18.5 17 20.5 M23 16.5 Q28 14.5 32 16 M23 20.5 Q28 18.5 32 20"/>
+    <path class="pr-b" d="M20 12 L20 33 L18.5 35 L18.5 13 Z"/>
+  </g>
+
+  <!-- 黑板 -->
+  <g id="p-board">
+    <rect class="pr-c pr-line" x="4" y="7" width="32" height="21" rx="2"/>
+    <path class="pr-chalk" d="M9 14 L15 14 M9 19 L20 19 M24 13 L30 21 M30 13 L24 21"/>
+    <rect class="pr-b" x="3" y="27" width="34" height="3" rx="1"/>
+    <path class="pr-ink-line" d="M10 30 L8 37 M30 30 L32 37"/>
+  </g>
+
+  <!-- 地球儀 -->
+  <g id="p-globe">
+    <circle class="pr-a pr-line" cx="20" cy="17" r="11"/>
+    <path class="pr-b" d="M13 12 Q17 9 20 12 Q19 16 15 17 Q12 16 13 12 Z M22 18 Q27 16 28 21 Q25 25 22 23 Z"/>
+    <path class="pr-ink-line" d="M8 17 A12 12 0 0 0 32 17"/>
+    <path class="pr-ink-line" d="M20 29 L20 33 M14 35 L26 35"/>
+  </g>
+
+  <!-- ABC 小書（英文） -->
+  <g id="p-abc">
+    <rect class="pr-b pr-line" x="6" y="8" width="28" height="24" rx="3"/>
+    <rect class="pr-w" x="10" y="12" width="20" height="16" rx="2"/>
+    <text class="pr-letters" x="20" y="24.5" text-anchor="middle">ABC</text>
+  </g>
+
+  <!-- 音符（藝文） -->
+  <g id="p-note">
+    <ellipse class="pr-b" cx="13" cy="30" rx="5.5" ry="4.2" transform="rotate(-18 13 30)"/>
+    <rect class="pr-ink" x="17" y="8" width="2.4" height="22" rx="1"/>
+    <path class="pr-b" d="M19 8 Q29 11 30 19 Q26 14 19 14 Z"/>
+  </g>
+
+  <!-- 新芽（自然空地） -->
+  <g id="p-sprout">
+    <path class="pr-ink-line" d="M20 34 L20 20"/>
+    <path class="pr-a pr-line" d="M20 22 Q11 22 9 13 Q18 13 20 22 Z"/>
+    <path class="pr-a pr-line" d="M20 19 Q28 18 31 10 Q22 10 20 19 Z"/>
+    <ellipse class="pr-c" cx="20" cy="35" rx="8" ry="2.2"/>
+  </g>
+
+  <!-- 遊戲手把 -->
+  <g id="p-gamepad">
+    <path class="pr-a pr-line" d="M9 13 L31 13 Q37 13 37 21 L36 28 Q35 33 30 31 L26 26 L14 26 L10 31 Q5 33 4 28 L3 21 Q3 13 9 13 Z"/>
+    <path class="pr-ink" d="M10 17 h3 v3 h3 v3 h-3 v3 h-3 v-3 h-3 v-3 h3 Z"/>
+    <circle class="pr-b" cx="28" cy="18.5" r="2"/>
+    <circle class="pr-c" cx="31.5" cy="22.5" r="2"/>
+  </g>
+
+  <!-- 骰子 -->
+  <g id="p-dice">
+    <rect class="pr-w pr-line" x="8" y="9" width="23" height="23" rx="5" transform="rotate(-10 20 20)"/>
+    <g class="pr-ink" transform="rotate(-10 20 20)">
+      <circle cx="14" cy="15" r="2"/><circle cx="25" cy="15" r="2"/>
+      <circle cx="19.5" cy="20.5" r="2"/>
+      <circle cx="14" cy="26" r="2"/><circle cx="25" cy="26" r="2"/>
+    </g>
+  </g>
+
+  <!-- 棋盤格 -->
+  <g id="p-checker">
+    <rect class="pr-w pr-line" x="7" y="7" width="26" height="26" rx="2"/>
+    <path class="pr-b" d="M7 7 h8.67 v8.67 h-8.67 Z M24.33 7 h8.67 v8.67 h-8.67 Z M15.67 15.67 h8.67 v8.67 h-8.67 Z M7 24.33 h8.67 v8.67 h-8.67 Z M24.33 24.33 h8.67 v8.67 h-8.67 Z"/>
+  </g>
+
+  <!-- 齒輪 -->
+  <g id="p-gear">
+    <g class="gear-spin">
+      <path class="pr-a pr-line" d="M18 4 h4 l1 5 l4 1.6 l4.2 -3 l2.8 2.8 l-3 4.2 l1.6 4 l5 1 v4 l-5 1 l-1.6 4 l3 4.2 l-2.8 2.8 l-4.2 -3 l-4 1.6 l-1 5 h-4 l-1 -5 l-4 -1.6 l-4.2 3 l-2.8 -2.8 l3 -4.2 l-1.6 -4 l-5 -1 v-4 l5 -1 l1.6 -4 l-3 -4.2 l2.8 -2.8 l4.2 3 l4 -1.6 Z"/>
+      <circle class="pr-w pr-line" cx="20" cy="20" r="5"/>
+    </g>
+  </g>
+
+  <!-- 方塊 -->
+  <g id="p-cube">
+    <path class="pr-a pr-line" d="M20 6 L34 13 L20 20 L6 13 Z"/>
+    <path class="pr-b pr-line" d="M6 13 L20 20 L20 35 L6 28 Z"/>
+    <path class="pr-c pr-line" d="M34 13 L20 20 L20 35 L34 28 Z"/>
+  </g>
+
+  <!-- 扳手 -->
+  <g id="p-wrench">
+    <path class="pr-w pr-line" d="M27 5 Q35 6 35 14 L30 14 L27 11 L24 14 L24 18 L11 32 Q8 35 6 33 Q4 31 7 28 L21 15 Q20 7 27 5 Z"/>
+  </g>
+
+  <!-- 冰晶 -->
+  <g id="p-snow">
+    <path class="pr-ice" d="M20 5 V35 M7 12.5 L33 27.5 M7 27.5 L33 12.5 M16 7.5 L20 11 L24 7.5 M16 32.5 L20 29 L24 32.5 M8.5 17 L12.5 15 L10.5 11 M31.5 23 L27.5 25 L29.5 29 M8.5 23 L12.5 25 L10.5 29 M31.5 17 L27.5 15 L29.5 11"/>
+  </g>
+
+  <!-- 蓋布的箱子 -->
+  <g id="p-tarp">
+    <rect class="pr-c" x="9" y="20" width="22" height="14" rx="1"/>
+    <path class="pr-w pr-line" d="M7 33 Q6 22 10 16 Q20 10 30 16 Q34 22 33 33 Q30 30 27 33 Q24 30 20 33 Q16 30 13 33 Q10 30 7 33 Z"/>
+    <path class="pr-thin" d="M15 15 Q17 24 15 31 M25 15 Q23 24 25 31"/>
+  </g>
+  <!-- ===== 地塊上的景物（底部中心約在 20,37） ===== -->
+  <g id="p-tree">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="9" ry="3"/>
+    <rect class="sc-trunk" x="18.3" y="26" width="3.4" height="11" rx="1.2"/>
+    <circle class="sc-leaf2" cx="20" cy="20" r="10"/>
+    <circle class="sc-leaf" cx="17.5" cy="17.5" r="7.5"/>
+    <circle class="sc-light" cx="15" cy="15" r="2"/>
+  </g>
+  <g id="p-pine">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="8" ry="2.6"/>
+    <rect class="sc-trunk" x="18.4" y="30" width="3.2" height="7"/>
+    <path class="sc-leaf2" d="M20 6 L30 22 L10 22 Z"/>
+    <path class="sc-leaf" d="M20 13 L32 31 L8 31 Z"/>
+  </g>
+  <g id="p-snowpine">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="8" ry="2.6"/>
+    <rect class="sc-trunk" x="18.4" y="30" width="3.2" height="7"/>
+    <path class="sc-leaf2" d="M20 6 L30 22 L10 22 Z"/>
+    <path class="sc-leaf" d="M20 13 L32 31 L8 31 Z"/>
+    <path class="sc-snow" d="M20 6 L24.5 13 L22 12 L20 14 L18 12 L15.5 13 Z M20 13 L25.5 21 L22.5 20 L20 22 L17.5 20 L14.5 21 Z"/>
+  </g>
+  <g id="p-bush">
+    <ellipse class="sc-shadow" cx="20" cy="36" rx="11" ry="3"/>
+    <circle class="sc-leaf2" cx="14" cy="31" r="6"/>
+    <circle class="sc-leaf2" cx="26" cy="31" r="6"/>
+    <circle class="sc-leaf" cx="20" cy="27" r="7"/>
+    <circle class="sc-flower-a" cx="17" cy="25" r="1.6"/>
+    <circle class="sc-flower-b" cx="23" cy="29" r="1.6"/>
+  </g>
+  <g id="p-flower">
+    <path class="sc-stem" d="M14 36 V28 M20 36 V25 M26 36 V29"/>
+    <circle class="sc-flower-a" cx="14" cy="27" r="3"/>
+    <circle class="sc-flower-b" cx="20" cy="24" r="3.2"/>
+    <circle class="sc-flower-a" cx="26" cy="28" r="2.8"/>
+    <circle class="sc-light" cx="20" cy="24" r="1.1"/>
+  </g>
+  <g id="p-lamp">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="5" ry="1.8"/>
+    <rect class="sc-metal" x="19" y="12" width="2" height="25" rx="1"/>
+    <path class="sc-metal" d="M15 12 L25 12 L23 8 L17 8 Z"/>
+    <circle class="sc-glow" cx="20" cy="14.5" r="3"/>
+  </g>
+  <g id="p-bench">
+    <ellipse class="sc-shadow" cx="20" cy="35" rx="12" ry="2.6"/>
+    <path class="sc-wood" d="M8 27 L28 21 L32 23 L12 29 Z"/>
+    <path class="sc-wood2" d="M8 27 L8 23 L28 17 L28 21 Z"/>
+    <path class="sc-metal-line" d="M11 28.5 V34 M29 22.5 V28"/>
+  </g>
+  <g id="p-rock">
+    <ellipse class="sc-shadow" cx="20" cy="36" rx="10" ry="2.6"/>
+    <path class="sc-stone2" d="M9 35 L12 26 L20 22 L29 25 L32 35 Z"/>
+    <path class="sc-stone" d="M12 26 L20 22 L29 25 L22 29 Z"/>
+  </g>
+
+  <!-- ===== 各區地標建築（簡化等角） ===== -->
+  <g id="p-l-school">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="16" ry="3.4"/>
+    <path class="lm-wall2" d="M5 22 L20 29 L20 38 L5 31 Z"/>
+    <path class="lm-wall" d="M20 29 L35 22 L35 31 L20 38 Z"/>
+    <path class="lm-roof" d="M5 22 L20 15 L35 22 L20 29 Z"/>
+    <path class="lm-win" d="M8 26 L11 27.4 L11 30 L8 28.6 Z M14 28.8 L17 30.2 L17 32.8 L14 31.4 Z M23 30.2 L26 28.8 L26 31.4 L23 32.8 Z M29 27.4 L32 26 L32 28.6 L29 30 Z"/>
+    <path class="lm-wall" d="M17 13 L20 14.5 L23 13 L23 21 L20 22.5 L17 21 Z"/>
+    <path class="lm-roof2" d="M16 13 L20 9 L24 13 L20 15 Z"/>
+    <circle class="lm-win" cx="20" cy="17.5" r="1.6"/>
+    <path class="sc-metal-line" d="M20 9 V2"/>
+    <path class="lm-flag" d="M20 2 L26 3.6 L20 5.4 Z"/>
+  </g>
+  <g id="p-l-library">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="15" ry="3.2"/>
+    <path class="lm-wall2" d="M6 21 L20 28 L20 38 L6 31 Z"/>
+    <path class="lm-wall" d="M20 28 L34 21 L34 31 L20 38 Z"/>
+    <path class="lm-roof2" d="M6 21 L13 11 L27 4 L20 14 Z"/>
+    <path class="lm-roof" d="M20 14 L27 4 L34 21 L20 28 Z"/>
+    <path class="lm-book" d="M9 25 V31 M11.5 26.2 V32.2 M14 27.4 V33.4"/>
+    <path class="lm-door" d="M24 30 L28 28 L28 34 L24 36 Z"/>
+  </g>
+  <g id="p-l-arcade">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="15" ry="3.2"/>
+    <path class="lm-wall" d="M6 31 L20 37 L34 31 L34 24 L20 30 L6 24 Z"/>
+    <path class="lm-roof" d="M4 24 L20 8 L36 24 L20 31 Z"/>
+    <path class="lm-stripe" d="M20 8 L12 27.5 L16 29.2 Z M20 8 L24 29.2 L28 27.5 Z"/>
+    <path class="lm-door" d="M17 31.5 L23 31.5 L23 36 L17 36 Z"/>
+    <path class="sc-metal-line" d="M20 8 V2"/>
+    <path class="lm-flag" d="M20 2 L26 3.6 L20 5.4 Z"/>
+  </g>
+  <g id="p-l-workshop">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="16" ry="3.2"/>
+    <path class="lm-wall2" d="M5 22 L20 29 L20 38 L5 31 Z"/>
+    <path class="lm-wall" d="M20 29 L35 22 L35 31 L20 38 Z"/>
+    <path class="lm-roof" d="M5 22 L10 14 L15 19.5 L20 12 L25 17 L30 10 L35 22 L20 29 Z"/>
+    <path class="lm-door" d="M9 27 L15 30 L15 35.5 L9 32.5 Z"/>
+    <circle class="lm-win" cx="27.5" cy="29" r="3"/>
+    <circle class="lm-roof2" cx="27.5" cy="29" r="1.2"/>
+  </g>
+  <g id="p-l-igloo">
+    <ellipse class="sc-shadow" cx="20" cy="37" rx="15" ry="3.2"/>
+    <path class="lm-ice" d="M5 35 A15 15 0 0 1 35 35 Z"/>
+    <path class="lm-ice-line" d="M7 29 H33 M10.5 23.5 H29.5 M16 18.5 H24 M13 35 V29 M27 35 V29 M18 29 V23.5 M23 29 V23.5"/>
+    <path class="lm-door" d="M15 35 A5 5 0 0 1 25 35 Z"/>
+    <path class="lm-tarp" d="M26 35 L36 35 L37 28 Q33 25 29 27 Q26 29 26 35 Z"/>
+  </g>
+</svg>

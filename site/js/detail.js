@@ -1,0 +1,161 @@
+// 詳情卡：問題 → 做法 → 成果＋狀態標籤＋說明／凍結原因＋連結（內容全部來自資料檔）
+import { el, statusKind, statusIcon } from './util.js';
+
+export function renderCard(w, model, { inList = false, onRelated } = {}) {
+  const zone = model.zoneById[w.zone];
+  const card = el('article', { class: 'card zone-' + w.zone, 'data-card': w.id });
+  const meta = [zone ? zone.name : w.zone];
+  if (w.subzone) meta.push(w.subzone);
+
+  if (!inList) {
+    card.appendChild(el('p', { class: 'card-kicker' }, [
+      el('span', { class: 'num-badge zone-' + w.zone, text: String(w.num) }), meta.join('・')
+    ]));
+    card.appendChild(el('h2', { class: 'card-title', id: 'detail-title', tabindex: '-1', text: w.name }));
+  }
+  if (w.audience) card.appendChild(el('p', { class: 'card-meta', text: (inList ? meta.join('・') + '・' : '') + '對象：' + w.audience }));
+
+  const kind = statusKind(w);
+  const badges = el('p', { class: 'badges' }, el('span', { class: 'status st-' + kind }, [statusIcon(kind), w.status]));
+  if (w.relationLabel) badges.appendChild(el('span', { class: 'rel-badge', text: w.relationLabel }));
+  card.appendChild(badges);
+
+  const steps = [['問題', w.problem], ['做法', w.approach], ['成果', w.result]].filter((s) => s[1]);
+  if (steps.length) {
+    card.appendChild(el('ol', { class: 'pra' }, steps.map(([k, v]) => el('li', null, [el('span', { class: 'pra-k', text: k }), el('span', { class: 'pra-v', text: v })]))));
+  }
+  if (w.displayNote) card.appendChild(el('p', { class: 'note' }, [el('strong', { text: '說明　' }), w.displayNote]));
+  if (w.freezeReason) card.appendChild(el('p', { class: 'note freeze' }, [el('strong', { text: '凍結原因　' }), w.freezeReason]));
+
+  if (w.subzoneItems) {
+    // 子頁一律連回母站首頁（資料檔第一個連結），不猜子頁網址
+    const home = w.links && w.links[0] ? w.links[0].url : null;
+    const order = (zone && zone.subzones) || Object.keys(w.subzoneItems);
+    let total = 0;
+    const groups = el('div', { class: 'subzones' });
+    order.forEach((name) => {
+      const items = w.subzoneItems[name];
+      if (!items) return;
+      total += items.length;
+      groups.appendChild(el('div', { class: 'subzone' }, [
+        el('h3', { text: `${name}（${items.length}）` }),
+        el('ul', null, items.map((it) => el('li', null, home ? el('a', { href: home, target: '_blank', rel: 'noopener' }, it) : it)))
+      ]));
+    });
+    card.appendChild(el('h3', { class: 'subzones-title', text: `站內五小區，共 ${total} 個子頁` }));
+    card.appendChild(groups);
+    if (w.subzoneNote) card.appendChild(el('p', { class: 'note' }, w.subzoneNote));
+  }
+
+  const rel = model.connections.filter((c) => c.from === w.id || c.to === w.id);
+  if (rel.length) {
+    card.appendChild(el('ul', { class: 'relations' }, rel.map((c) => {
+      const other = model.byId[c.from === w.id ? c.to : c.from];
+      return el('li', { class: c.style === 'dashed' ? 'dashed' : 'solid' }, [
+        el('span', { class: 'rel-line', 'aria-hidden': 'true' }),
+        el('span', null, [
+          '關聯：',
+          onRelated ? el('button', { type: 'button', class: 'link-btn', onclick: () => onRelated(other.id) }, other.name) : other.name,
+          '｜' + c.label
+        ])
+      ]);
+    })));
+  }
+
+  if (w.tags && w.tags.length) {
+    card.appendChild(el('p', { class: 'tags' }, w.tags.map((t) => el('span', { class: 'tag', text: t }))));
+  }
+  if (w.links && w.links.length) {
+    card.appendChild(el('p', { class: 'links' }, w.links.map((l) => el('a', { class: 'btn', href: l.url, target: '_blank', rel: 'noopener' }, l.label))));
+  }
+  return card;
+}
+
+// 左側「目前選擇」卡：滑過／聚焦分區時顯示分區摘要（預覽），點作品時顯示作品詳情。
+// 分區摘要只用資料檔已有的文字：區名、件數、作品名稱與狀態、zone.note、空子區的 note。
+export function renderZoneCard(zone, model, { progress, onPick }) {
+  const works = model.worksInZone(zone.id);
+  const card = el('article', { class: 'card zone-card zone-' + zone.id, 'data-zone-card': zone.id });
+  card.appendChild(el('p', { class: 'card-kicker' }, [el('span', { class: 'hex-dot', 'aria-hidden': 'true' }), '目前選擇的分區']));
+  const head = el('h2', { class: 'card-title', id: 'detail-title', tabindex: '-1' }, [zone.name, el('span', { class: 'zc-count', text: works.length + ' 件' })]);
+  card.appendChild(head);
+  if (progress && progress.zoneDone(zone.id)) card.appendChild(el('p', { class: 'badges' }, el('span', { class: 'done-chip', text: '已逛完' })));
+  if (zone.note) card.appendChild(el('p', { class: 'note', text: zone.note }));
+
+  const item = (w) => el('li', null, el('button', { type: 'button', class: 'zc-item' + (progress && progress.has(w.id) ? ' is-visited' : ''), onclick: () => onPick(w.id) }, [
+    el('span', { class: 'num-badge zone-' + w.zone, text: String(w.num) }),
+    el('span', { class: 'zc-name', text: w.name }),
+    el('span', { class: 'status st-' + statusKind(w) }, [statusIcon(statusKind(w)), w.status]),
+    progress && progress.has(w.id) ? el('span', { class: 'seen', text: '看過' }) : null
+  ]));
+
+  const usesCells = works.length && works.every((w) => w.subzone);
+  if (usesCells) {
+    const names = (zone.subzones || []).slice();
+    works.forEach((w) => { if (!names.includes(w.subzone)) names.push(w.subzone); });
+    const empties = Object.fromEntries((zone.emptySubzones || []).map((e) => [e.name, e.note]));
+    names.forEach((name) => {
+      const list = works.filter((w) => w.subzone === name);
+      card.appendChild(el('h3', { class: 'zc-sub', text: `${name}（${list.length}）` }));
+      if (list.length) card.appendChild(el('ul', { class: 'zc-list' }, list.map(item)));
+      else card.appendChild(el('p', { class: 'empty-sub', text: empties[name] || '' }));
+    });
+  } else {
+    card.appendChild(el('ul', { class: 'zc-list' }, works.map(item)));
+  }
+  return card;
+}
+
+export function createDetail(root, model, { onClose, onRelated, onPick, progress }) {
+  const body = root.querySelector('.detail-body');
+  root.querySelector('.detail-close').addEventListener('click', () => onClose());
+  let cur = null; // { kind: 'work' | 'zone', id, sticky }
+
+  function show(node, next, focus) {
+    cur = next;
+    body.textContent = '';
+    body.appendChild(node);
+    body.scrollTop = 0;
+    root.hidden = false;
+    root.classList.toggle('is-preview', !next.sticky);
+    requestAnimationFrame(() => root.classList.add('is-open'));
+    if (focus) setTimeout(() => { const t = body.querySelector('#detail-title'); if (t) t.focus({ preventScroll: true }); }, 30);
+  }
+
+  return {
+    open(id, { focus = false } = {}) {
+      const w = model.byId[id];
+      if (!w) return;
+      root.setAttribute('aria-label', w.name);
+      show(renderCard(w, model, { onRelated }), { kind: 'work', id, sticky: true }, focus);
+    },
+    // sticky=false 是滑鼠滑過的預覽：已有固定內容時不覆蓋
+    showZone(zoneId, { sticky = false, focus = false } = {}) {
+      const z = model.zoneById[zoneId];
+      if (!z) return;
+      if (!sticky && cur && cur.sticky) return;
+      if (!sticky && cur && cur.kind === 'zone' && cur.id === zoneId) return;
+      root.setAttribute('aria-label', z.name);
+      show(renderZoneCard(z, model, { progress, onPick }), { kind: 'zone', id: zoneId, sticky }, focus);
+    },
+    hidePreview() {
+      if (cur && !cur.sticky) this.close();
+    },
+    // 進度變化後重畫目前的分區卡（例如出現「已逛完」）
+    refresh() {
+      if (cur && cur.kind === 'zone') {
+        const keep = cur;
+        cur = null;
+        this.showZone(keep.id, { sticky: keep.sticky });
+      }
+    },
+    close() {
+      cur = null;
+      root.classList.remove('is-open');
+    },
+    isOpen: () => !!cur,
+    isSticky: () => !!(cur && cur.sticky),
+    current: () => cur,
+    root
+  };
+}

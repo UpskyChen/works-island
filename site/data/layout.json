@@ -1,0 +1,85 @@
+{
+  "說明": "地圖版面設定（不含任何作品內容）。layouts.*.rows 是各分區島嶼的排列與寬度（地圖單位），島的高度與作品節點位置由程式依 works.json 自動計算；cellOrder 是子區排列順序；bridges 是島與島之間的裝飾木橋（只是步道，不代表作品關聯）。props 是標題列旁的小插畫，scenery 是散布在地塊空位上的景物與地標建築（對應 assets/props.svg 的 id）。art 是各分區的選填插圖資產槽：填入圖片路徑（例如 assets/zones/campus.webp）就以圖片取代該區的 SVG 地塊，留 null 則使用 SVG。",
+  "layouts": {
+    "wide": {
+      "minWidth": 1000,
+      "nodes": "names",
+      "width": 1110,
+      "margin": 30,
+      "gap": 30,
+      "rows": [[["campus", 380], ["subjects", 640]], [["tools", 320], ["games", 330], ["frozen", 320]]],
+      "cellOrder": {
+        "subjects": ["英文", "藝文", "數學", "社會", "國語", "自然"]
+      },
+      "bridges": [["campus", "subjects"], ["subjects", "frozen"], ["frozen", "games"], ["games", "tools"], ["tools", "campus"]]
+    },
+    "medium": {
+      "minWidth": 600,
+      "nodes": "names",
+      "width": 800,
+      "margin": 24,
+      "gap": 30,
+      "rows": [[["subjects", 752]], [["campus", 361], ["tools", 361]], [["games", 361], ["frozen", 361]]],
+      "cellOrder": {
+        "subjects": ["英文", "藝文", "數學", "社會", "國語", "自然"]
+      },
+      "bridges": [["subjects", "tools"], ["tools", "frozen"], ["frozen", "games"], ["games", "campus"], ["campus", "subjects"]]
+    },
+    "narrow": {
+      "minWidth": 0,
+      "nodes": "numbers",
+      "width": 420,
+      "margin": 16,
+      "gap": 14,
+      "rows": [[["subjects", 388]], [["campus", 187], ["tools", 187]], [["games", 187], ["frozen", 187]]],
+      "cellOrder": {
+        "subjects": ["英文", "藝文", "數學", "社會", "國語", "自然"]
+      },
+      "bridges": [["subjects", "tools"], ["tools", "frozen"], ["frozen", "games"], ["games", "campus"], ["campus", "subjects"]]
+    }
+  },
+  "props": {
+    "campus": ["school", "flag", "track"],
+    "subjects": ["globe", "board", "book"],
+    "games": ["gamepad", "dice", "checker"],
+    "tools": ["gear", "cube", "wrench"],
+    "frozen": ["snow", "tarp", "snow"]
+  },
+  "subzoneProps": {
+    "英文": "abc",
+    "數學": "board",
+    "社會": "globe",
+    "藝文": "note",
+    "國語": "book",
+    "自然": "sprout"
+  },
+  "scenery": {
+    "campus": {
+      "landmark": "l-school",
+      "items": ["tree", "bench", "lamp", "flower", "tree", "bush"]
+    },
+    "subjects": {
+      "landmark": "l-library",
+      "items": ["tree", "bush", "flower", "bench", "tree", "lamp"]
+    },
+    "games": {
+      "landmark": "l-arcade",
+      "items": ["flower", "bush", "lamp", "tree", "flower"]
+    },
+    "tools": {
+      "landmark": "l-workshop",
+      "items": ["pine", "rock", "lamp", "bush", "pine"]
+    },
+    "frozen": {
+      "landmark": "l-igloo",
+      "items": ["snowpine", "rock", "snowpine", "rock"]
+    }
+  },
+  "art": {
+    "campus": null,
+    "subjects": null,
+    "games": null,
+    "tools": null,
+    "frozen": null
+  }
+}
