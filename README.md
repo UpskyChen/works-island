@@ -181,7 +181,7 @@ python3 -m http.server 8000
 
 ## 島嶼形狀（data/layout.json）
 
-- 三種螢幕寬度各有一套：`wide`（1000px 以上）、`medium`（600px 以上）、`narrow`（手機，節點只顯示編號）。
+- 三種寬度各有一套：`wide`（1000px 以上）、`medium`（600px 以上）、`narrow`（手機，節點只顯示編號）。判斷依據是地圖區塊本身的寬度，不是整個螢幕的寬度。
 - `islands`：每座島的中心 `cx`、`cy`，內容寬度 `contentW`，以及輪廓座標 `pts`（以島中心為原點的 `[x, y]`）。輪廓由 `tools/gen-islands.mjs` 以固定種子（`seed`）產生後寫進來，每次載入形狀都一樣，不會隨機變動。島的大小依作品件數決定。
 - `decor`：沙洲、礁石、小浮島，跟著所屬的島擺放。
 - `walkways`：島與島之間的步道。`kind` 是 `arch`（拱橋）或 `deck`（棧道），`rise` 是拱起高度，`bend` 是彎曲程度。步道只是裝飾（中性木色）；作品之間真正的關聯是 `works.json` 的 `connections`，畫成彩色弧線，圖例分開標示。
