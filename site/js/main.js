@@ -100,10 +100,10 @@ async function start() {
     drawNodes(layers.nodes, model, lay, { onActivate: (id, o) => select(id, { source: 'map', focusCard: o.keyboard }), wasDragged: map.wasDragged });
     setLinksVisible(layers.links, app.linksOn);
     map.setStamps(progress.doneZones()); // 也會重新定位所有直立物（含剛畫好的節點）
-    // 鍵盤聚焦節點時，左側卡預覽該分區
+    // 鍵盤聚焦節點時，左側卡預覽該分區（只限鍵盤：滑鼠或手指按下節點也會聚焦，那時不預覽，拖曳才不會帶出分區卡）
     layers.nodes.addEventListener('focusin', (e) => {
       const n = e.target.closest('.node');
-      if (n && !app.quietFocus) detail.showZone(n.getAttribute('data-zone'));
+      if (n && !app.quietFocus && n.matches(':focus-visible')) detail.showZone(n.getAttribute('data-zone'));
     });
     app.layers = layers;
     mark();
@@ -257,7 +257,7 @@ async function start() {
     if (!b) return;
     const act = b.dataset.act;
     if (act !== 'tour') stopTour();
-    if (act === 'pano') clearSelection();
+    if (act === 'pano') backToOverview();
     else if (act === 'zone' && app.lastId) select(app.lastId, { source: 'toolbar' });
     else if (act === 'in') map.zoomBy(1.4);
     else if (act === 'out') map.zoomBy(1 / 1.4);
@@ -289,6 +289,16 @@ async function start() {
     updateToolbar();
   }
   on('user-interact', stopTour);
+
+  // 「全景」：回到乾淨的總覽。關掉左側分區／作品卡與右側面板，清掉搜尋與篩選；
+  // 探索進度是存著的資料，不清除
+  function backToOverview() {
+    clearTimeout(hoverTimer);
+    clearSelection();
+    detail.close();
+    panel.resetFilters();
+    if (isOverlay(panelEl) && !panelEl.classList.contains('is-collapsed')) setPanelCollapsed(true);
+  }
 
   // ---------- 右側面板收合 ----------
   function setPanelCollapsed(c) {

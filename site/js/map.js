@@ -520,12 +520,22 @@ export function createMap(stage, host, opts) {
     const z = el.closest('[data-zone]');
     return z ? z.getAttribute('data-zone') : null;
   };
+  // 拖曳結束時，瀏覽器會對游標下的元素補發 pointerover；那不是「滑過」，不能因此打開分區預覽。
+  // 拖曳結束後記住游標所在的分區，滑鼠真的離開那個分區之後，才恢復滑過預覽。
+  let hoverHold;
   svgEl.addEventListener('pointerover', (e) => {
     if (e.pointerType !== 'mouse' || pointers.size) return;
-    opts.onZoneHover(zoneOf(e.target), e);
+    const z = zoneOf(e.target);
+    if (hoverHold !== undefined) {
+      if (z === hoverHold) return;
+      hoverHold = undefined;
+    }
+    opts.onZoneHover(z, e);
   });
   svgEl.addEventListener('pointerleave', (e) => {
-    if (e.pointerType === 'mouse') opts.onZoneHover(null, e);
+    if (e.pointerType !== 'mouse') return;
+    hoverHold = undefined;
+    opts.onZoneHover(null, e);
   });
 
   // ---------- 手勢：拖曳平移、雙指縮放、觸控板縮放 ----------
@@ -543,6 +553,8 @@ export function createMap(stage, host, opts) {
     if (tween) stopTween();
     pointers.set(e.pointerId, local(e));
     emit('user-interact');
+    // 按下就取消還沒出現的滑過預覽、收起已出現的預覽（點島空地放開時會改開固定的分區卡，不受影響）
+    if (pointers.size === 1) opts.onZoneHover(null, e);
     if (pointers.size === 1) {
       moved = false;
       lastDragged = false;
@@ -597,6 +609,10 @@ export function createMap(stage, host, opts) {
     }
     if (pointers.size === 0) {
       lastDragged = moved;
+      if (moved && e.pointerType === 'mouse') {
+        const under = document.elementFromPoint(e.clientX, e.clientY);
+        hoverHold = svgEl.contains(under) ? zoneOf(under) : undefined;
+      }
       if (opts.onDrag) opts.onDrag(0, 0, true);
       if (!moved && e.type === 'pointerup' && !(e.target.closest && e.target.closest('.node'))) {
         // 點島上空地＝選這個分區；點水面＝回到全景
